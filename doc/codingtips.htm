@@ -1,128 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
-<TITLE>Codingtips</TITLE>
-<!-- Generated with the Walhalla Content Management System -->
-<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
-</HEAD>
-
-<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
-<TR>
-<TD>
-<H1>Codingtips</H1><DIV CLASS=normaal>
-Before being POBSed, you probably need to adjust your sourcecode here and there. Especially in case you have chosen to also replace variables. In a scripting language like PHP, variables may create most of the problems. Below are some problems and solutions.<br>
-<br><DIV CLASS=normaal>
-<b>Don't name constants after HTML tags</b><br>POBS finds it hard to really find the constantnames. Contrary to variables, constants in PHP do not start with a indicator like a dollar-sign ($). If you have defined constants with  names like "HTML" or "HEAD", POBS will replace both these constants and these HTML tags with a new name, thinking they are constants. In order to avoid this, simply start every (or at least every dubious constantname) with a "c". I personally find it good practise to use uppercase for each constantname except for the first letter. So something like cUSERNAME and cHEAD. This will generally prevent problems.<br>
-<br><DIV CLASS=normaal>
-<b>Check for parse_str</b><br>"parse_str" is usefull PHP function which scans a string (i.e. a query_string) and generates variables. So a string with "Var1=3&Var2=X&Var3=123" processed by parse_str would result in the declaration of 3 variables and the according values would be assigned to them.<br>
-<br>
-This is particularly useful when passing many parameters to a certain function.<br>
-<br>
-I.e. function ProcessStuff($ParamsStr) {<br>
-  parse_str($ParamsStr);<br>
-  If ($Var1==4) echo "Yes";<br>
-  If ($Var2=="X") DoThis() ;<br>
-  If ($Var3==999) echo "Very much";<br>
-}<br>
-<br>
-ProcessStuff("Var1=3&Var2=Y&Var3=456);<br>
-<br>
-The example above would go wrong if been processed by POBS. POBS deals with the problems posed by functions like parse_str. POBS not only replaces $Var1 with a new name but also all occurences of &Var1. In the example above, Var2 and Var3 would do fine but Var1 would go wrong. POBS will replace $Var1 but will not replace Var1 in the parameterstring since it is not preceded by an ampersand (&). To avoid this problem simply add a preceding ampersand to the first variable in the parameterstring.<br>
-<br>
-ProcessStuff("Var1=3&Var2=Y&Var3=456); is wrong<br>
-<br>
-ProcessStuff("<b>&</b>Var1=3&Var2=Y&Var3=456); is right<br>
-<br><DIV CLASS=normaal>
-<b>Check for double slashes</b><br>Removing comments from your source code obviously helps in preventing others using it. You can optionally instruct POBS to remove comments.<br>
-<br>
-In order for POBS to find comments it searches for double slashes in you code <b>preceded by a space or tab character </b>(like " //"). It does not (yet?) check whether these slashes are somewhere in between quotes (in case they would <b>not</B> be comments). Before using POBS to remove comments you are advised to scan your code for double slashes.<br>
-<br><DIV CLASS=normaal>
-<b>Dealing with $$Var1</b><br>Consider the following code snippet:<br>
-<br>
-$Var1="Var2";<br>
-$$Var1="Amsterdam";<br>
-echo $Var2; // "Amsterdam"<br>
-<br>
-$Var2 will have the value "Amsterdam"<br>
-<br>
-POBS makes the following code of it:<br>
-<br>
-$V31bff649="Var2";<br>
-$$31bff649="Amsterdam";<br>
-echo $V8c4e34d5;  // empty<br>
-<br>
-As you see POBS has replaced all occurences of $Var2 but not Var2. Therefore this little program will not work as intended. To get it working you need to add Var2 to the $UdExcVarArray in pobs-ini.inc.<br>
-<br>
-<br><DIV CLASS=normaal>
-<b>Dealing with $GLOBALS and $HTTP_POST_VARS</b><br>$GLOBALS is a predefined array in which all the global variables are present. In many programs variables are added to this array.<br>
-<br>
-POBS replaces both $Var as $GLOBALS["var"] or $GLOBALS[var] occurences in your code so this will generally not cause problems. But you might have a strange unusual situation with i.e. $GLOBALS[strtolower($VarX)] where POBS will not work properly. You would have to add $VarX to the exclude user-defined variables array in pobs-ini.inc.<br>
-<br>
-POBS does <b><i>NOT</I></b> deal with $HTTP_POST_VARS, $HTTP_GET_VARS and $HTTP_COOKIE_VARS. You might add them yourself if you want by copying the ereg_replace code for $GLOBALS and replace GLOBALS with i.e. HTTP_POST_VARS.<br>
-<br>
-<br><DIV CLASS=normaal>
-<b>Cookies</b><br>Cookies might cause problems since they are used in a normal fashion but defined and set in an unusual way.<br>
-<br>
-setcookie ("TestCookie", "Test Value");<br>
-echo $TestCookie;<br>
-<br>
-After POBS has done it's work the cookie "TestCookie" will still have be set but displaying the contents of the cookie will result in an empty string.<br>
-<br>
-In the future POBS might just deal properly with this problem by also replacing setcookie("CookieName", "CookieValue") with setcookie("Veda45e23", "CookieValue"). But now it doesn't and here is what I suggest you to do.<br>
-<br>
-Exclude all cookievariables by adding them to $UdExcVarArray in pobs-ini.inc. This is easiest done (and most secure) if you name every cookie according to a naming convention. Personally I start all cookienames with "whc_" so that I only have to add "whc_*" to the array. It's also good coding if you ask me. Scan your sourcefiles for the PHP function "setcookie" and give the first parameter a new name.<br>
-<br><DIV CLASS=normaal>
-<b>Forms and fields</b><br>If a user submits a form that is given to a PHP script, PHP automatically creates variables with names corresponding with the names of the input fields of the form.<br>
-<br>
-POBS deals with this by also replacing every field in every form<br>
-<br>
-So, consider the following HTML code:<br>
-<br>
-&lt;FORM METHOD=POST ACTION=do-it.php&gt;<br>
-&lt;INPUT TYPE=TEXT NAME=address&gt;<br>
-&lt;FORM&gt;<br>
-<br>
-The PHP script do-it.php has references to $address. POBS will replace it. And  POBS also replaces NAME=address with that same value.<br>
-<br>
-A problem arises when a program outputs forms automatically. POBS can no longer find code like :<br>
-<br>
-echo "&lt;INPUT TYPE=TEXT NAME=address&gt;";<br>
-<br>
-but will instead find something like:<br>
-<br>
-echo "&lt;INPUT TYPE=TEXT NAME=".CreateFieldName("address")."&gt;";<br>
-<br>
-and will not replace the latter fieldname.<br>
-<br>
-The remedy would be (that's what I did) to let all created fieldnames by CreateFieldName() start with the same letters. Something like "field_". This would result in something like "field_address" and "field_phone" etc).You would than just have to add the entry "field_*" (don't forget the wildcard!) to the $UdExcVarArray in pobs-ini.inc and the problems are over.<br>
-<br><DIV CLASS=normaal>
-<b>Javascript functions</b><br>Formerly I stated that when you were using inline Javascript you need to make adjustments. I was wrong. The only possible problem with inline Javascript I know of, is that you can't let POBS <i>concatenate lines if you haven't ended each Javascript codeline with a semicolon ";"</I>. I guess this doesn't need extra explanation.<br>
-<br>
-POBS does not (and can not easily) discriminate between JavaScript functions and PHP functions. It you declared a Javascript function named "X", POBS will replace this Javascript function and all references to it. <i>As far as I know this will not create problems</i> so there is no need to worry.<br>
-<br>
-If you don't want your Javascript functions to be replaced, i.e. in case you want to debug it more easily, you can add them to $UdExcFuncArray in pobs-ini.inc or you can replace the inline Javascript with Javascript echoed by PHP. An example is shown below:<br>
-<br>
-echo "function JsCheckField() {n";<br>
-echo "&lt;Javascript code lines&gt;n";<br>
-echo "}n";<br>
-<br>
-This way POBS doesn' t consider "JsCheckField()" to be a function that needs replacement.<br>
-<br><DIV CLASS=normaal>
-<b>Inline HTML and &lt;pre&gt;</b><br>Programmers can use inline HTML in their PHP files. When POBS is instructed to concatenate codelines it normally is not a problem and doesn't compromise the HTML since carriage returns are not presented by return characters in HTML but by &lt;br&gt;. But, when &lt;pre&gt; is used before a piece of HTML code the browser interprets each return character as a &lt;br&gt;. Another problem with inline HTML is laid out in the paragraph below.<br>
-<br>
-&lt;pre&gt;<br>
-This text will be displayed exactly as is seen here.<br>
-Every return in this text is interpreted as a carriage return by your browser.<br>
-&lt;/pre&gt;<br>
-<br>
-And this is what POBS can make of it:<br>
-&lt;pre&gt;<br>
-This text will be displayed exactly as is seen here.Every return in this text is interpreted as a carriage return by your browser.<br>
-&lt;/pre&gt;<br>
-<br></TD>
-</TR>
-</TABLE>
-<br>
-<br>
-<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>

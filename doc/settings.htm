@@ -1,72 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
-<TITLE>Settings</TITLE>
-<!-- Generated with the Walhalla Content Management System -->
-<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
-</HEAD>
-
-<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
-<TR>
-<TD>
-<H1>Settings</H1>The file pobs-ini.inc controls many aspects of POBS behavior. POBS will try to include it and looks for it in the current working directory.<br>
-Instead of a real "ini-file" it's just a plain PHP scriptfile. It is assumed you are familiar with PHP code syntax if you use PHP Obscure so configuring this file won't give you too much trouble.<br>
-<br>
-<DIV CLASS=normaal>
-<b>Replace selectively</b><br>When you first use POBS you are advised <I>to NOT replace variables immediately</I>. Just replace functions and constants first and see whether your program still runs properly. If it does, you might want to replace variables as well.<br>
-<br>
-$ReplaceFunctions=TRUE;<br>
-$ReplaceConstants=TRUE;<br>
-$ReplaceVariables=FALSE;<br>
-<br><DIV CLASS=normaal>
-<b>Exclude variables, constants or functions</b><br>You probably want to exclude certain variables. This is particularly helpful when you make use of these variables in your Query_String I.e.: http://www.domain.com/phpprogram.php?uid=234&action=select.<br>
-In this particular example you might need <b>( I do strongly recommend it)</b> to add at least "uid" and "action" to $UdExcVarArray in order to keep your program running properly. It also prevents your URLs from appearing extraterrestrial)  Do NOT use the dollar sign to indicate the name of a variable in this array. The names of the variables, constants and functions are case sensitive (which should go without saying since PHP is case-sensitive too.)<br>
-<br>
-My advice would be to use a naming convention for all QUERY_STRING parameters. Personally I use variablenames like "PA" and "POR" in the QUERY_STRING so that they can easily be dealt with and can easily be excluded from being replaced by POBS (by adding them to $UdExcVarArray).<br>
-<br>
-$UdExcVarArray=array("Dummy Entry","var1","var2","var3","params_*","whc_*");<br>
-$UdExcConstArray=array('Dummy Entry',"FRAMESET");<br>
-$UdExcFuncArray=array('Dummy Entry', "CheckValue");<br>
-<br>
-Do not remove the Dummy Entry since it may result in bad breath and other nasty things.<br>
-<br><DIV CLASS=normaal>
-<b>Predefined PHP Variables</b><br>It is essential that POBS does not replace Predefined PHP Variables. These variables are included in the $StdExcVarArray. Since newer versions of PHP can have new predefined variables you might add these yourself.<br>
-<br>
-It is adviced not to delete entries from $StdExcVarArray as it may result in a none-working program. To keep things tidy it is advised to only add new entries which are clearly predefined PHP variables.<br>
-<br>
-For adding your own excluded variables it is recommended to edit $UdExcVarArray<br>
-<br><DIV CLASS=normaal>
-<b>Source and target directories</b><br>Before running POBS for the first time your need to change both directories to your liking. POBS will not create the directories for you in case they don't exist.<br>
-The program will not run in case source and target directory are identical. Make sure the source directory is read enabled and the target directory is write enabled. Directories are case-SENSITIVE (Well, not on Win32, that is)<br>
-<br>
-$SourceDir="/application/php";<br>
-$TargetDir="/application/phpcrypt";<br>
-<br><DIV CLASS=normaal>
-<b>Remove comments and indents and returns</b><br>To further obscure your sourcecode you can remove the comments and indents. This should only be done in the end, when you have replaced variables, functions and constants and are certain your obfuscated code works.<br>
-<br>
-$RemoveComments=FALSE;<br>
-$RemoveIndents=FALSE;<br>
-$ConcatenateLines=FALSE;<br>
-<br>
-The concatenation of lines can create problems when used with inline Javascript or inline HTML with the &lt;pre&gt; tag used.<br>
-<br>
-function JsCheckField() {<br>
-var1="x"<br>
-var2="y"<br>
-}<br>
-<br>
-In the example above, concatenation will lead to a malfunctioning Javascript function.<br>
-<br>
-function JsCheckField() {var1="x"var2="y"}<br>
-<br>
-To avoid this you can:<ol><br>
-<li>Turn concatenation off<br>
-<li>End every javascript codeline with ';"<br>
-<li>echo Javascript like: echo "function JsCheckField() {n";<br>
-</ol><br></TD>
-</TR>
-</TABLE>
-<br>
-<br>
-<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>
