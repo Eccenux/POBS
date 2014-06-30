@@ -1,38 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
-<TITLE>Debug Tips</TITLE>
-<!-- Generated with the Walhalla Content Management System -->
-<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
-</HEAD>
-
-<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
-<TR>
-<TD>
-<H1>Debug Tips</H1>The downside of POBS is that it won't guarantee that your code will work properly. Another is that you might have to adjust your code to get it working. I must say though that many of the coding adjustments that I suggest are actually good (and normal) coding practices.<br>
-<br>
-The good thing is that I can tell you where you have to adjust your code.<br>
-<br>
-In my case I had almost 300 Kb of PHP code before I started designing POBS. It took me a while to adjust my code to get it working properly after being processed by POBS. If your program doesn't work properly after been POBSed, here is some debugging advice.<br>
-<br>
-<DIV CLASS=normaal>
-<b>Debugging</b><br>After using POBS you might want to check whether your program still works properly. If it doesn't you need to debug.<br>
-<br>
-In the PHP - includefile named "pobs-ini.inc" you can indicate if you like POBS to concatenate lines and to remove indents. If you set them to FALSE you will be able to more easily read the obfuscated code and see where things have gone wrong.<br>
-<br>
-$RemoveComments=TRUE;<br>
-$RemoveIndents=FALSE;<br>
-$ConcatenateLines=FALSE;<br>
-<br>
-In order to debug you want to know if the problem lies with the replacement of variables, functions or constants. Normally, variables give the most problems since a scripting language like PHP allows you to declare them very dynamically (think for instance of $$Var or the PHP function "parse_str"). So you want to continue more modestly and turn the replacement of variables, constants and functions on and off. That way it's easier to conclude where your code causes problems.<br>
-<br>
-$ReplaceFunctions=TRUE;<br>
-$ReplaceConstants=FALSE;<br>
-$ReplaceVariables=FALSE;<br>
-<br></TD>
-</TR>
-</TABLE>
-<br>
-<br>
-<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>

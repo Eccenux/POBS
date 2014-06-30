@@ -1,38 +1,0 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
-<HTML>
-<HEAD>
-<TITLE>How it works</TITLE>
-<!-- Generated with the Walhalla Content Management System -->
-<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
-</HEAD>
-
-<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
-<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
-<TR>
-<TD>
-<H1>How it works</H1><DIV CLASS=normaal>
-<b>Replace names</b><br>POBS replaces user-defined (NOT predefined) functions, constants and variables with a MD5 key of 8 characters. (It doesn't use MD5 keys of 32 bytes, which is standard, since that would increase the size of your sourcecode). 8 bytes seems enough to give each functions or variable its unique name. MD5 is not reversible.<br>
-<br>
-The first letter of the new functionname is a "F", of a variable a "V" and of a constant a "C"<br>
-<br>
-The function with name MakeImageHtml is replaced by Fee2c1bdc<br>
-The variable $ImgText is replaced by $V1d9d94a6<br>
-The constant USERDIR is replaced by C389a367e<br>
-<br><DIV CLASS=normaal>
-<b>Futher obscuring</b><br>In addition, POBS can be instructed to concatenate lines and remove comments and indents. These are not irreversible since a person can write a program to add indents and returns. But it really makes a mess of your code and therefore furtherly discourages many wouldbe hackers from trying to reverse-engineer your code.<br>
-<br><DIV CLASS=normaal>
-<b>Exclude stuff</b><br>POBS allows you to indicate which user-defined variables, constants and functions need to be excluded from replacing. In the settings file "pobs-ini.inc" you can add these names to the arrays $UdExVarArray, $UdExcConstArray and $UdExcFuncArray. Do NOT use dollarsigns here.<br>
-<br>
-In $UdExVarArray you are allowed to use <b>wildcards</b> in the form of an asterix (*) at the end of each variablename. I.e. params_* will exclude params_type, params_address and params_name. So if you name your variables to a certain convention you can easily and securely exclude them by group. This way you don't have to be afraid you forgot to add it to the array in case you added a new variable to your code.<br>
-<br><DIV CLASS=normaal>
-<b>Process</b><br>POBS consists of 2 major processes.<br>
-<br>
-1. POBS first scans all the files with the file-extensions allowed in the sourcedirectory. While scanning, it makes a list of userdefined variables, functions and constants it has located in your sourcecode<br>
-<br>
-2. POBS now knows which ones it should replace and starts writing new files in the target directory.<br>
-<br></TD>
-</TR>
-</TABLE>
-<br>
-<br>
-<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>
