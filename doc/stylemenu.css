@@ -1,0 +1,12 @@
+body { font-family: georgia, Verdana, sans serif; font-size: 10pt; }
+
+td { font-family: georgia, Verdana, sans serif; font-size: 10pt; vertical-align: top; }
+
+A:visited { font-family: georgia, Verdana, sans serif; font-size: 10pt; color: #00779E; text-decoration: none; }
+
+A:link { font-family: georgia, Verdana, sans serif; font-size: 10pt; color: #1E2A63; text-decoration: none; }
+
+A:hover { font-family: georgia, Verdana, sans serif; font-size: 10pt; color: #00779E; text-decoration: none; }
+
+.menuheader{ text-align: center; font-weight: bold; font-size: 12pt; margin-top : 1px; color: #000000; }
+

@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>Getting started</TITLE>
+<!-- Generated with the Walhalla Content Management System -->
+<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
+</HEAD>
+
+<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
+<TR>
+<TD>
+<H1>Getting started</H1><DIV CLASS=normaal>
+Installing POBS is as easy as I could think of. Just unzip the file pobs.zip and put it a directory that's accessible by your webserver. POBS is a collection of files in just 1 directory. The documentation is spread over 2 directories.<br>
+<br>
+Before executing POBS you are advised to read the manual that is provided through this website. Also check the settings in pobs-ini.inc and adjust them to suit your needs. When you run POBS for the first time, you should at least adjust the $SourceDir and the $TargetDir variables.<br>
+<br>
+If you have a large amount of PHP source to be POBSed, check your php.ini and see whether it runs in "Safe mode". If it does, POBS can not adjust the timeout setting as indicated in pobs-ini.inc and the processing might be terminated before POBS has finished the replacement of all your PHP codefiles. You might need to restart your webserver after adjusting the php.ini file.<br>
+<br>
+After having checked everything and having adjusted the settings in pobs-ini.inc you point your browser to pobs.php and press &lt;Enter&gt;. You will see something like the screen below.<br>
+<br>
+<br><DIV CLASS=normaal>
+<b>Start modestly</b><br>If you run POBS for the first time you are adviced to turn $ReplaceVariables off by setting it "FALSE"; That way you have a bigger chance your program still works after being POBSed and if not you can more easily debug it.<br>
+<br>
+$ReplaceFunctions=TRUE;<br>
+$ReplaceConstants=TRUE;<br>
+$ReplaceVariables=FALSE;<br>
+<br>
+I strongly advise you to turn the variables below off. You should turn them on only after you made sure your application works fine with functions, constants and variables already replaced.<br>
+<br>
+$RemoveIndents=FALSE;<br>
+$RemoveComments=FALSE;<br>
+$ConcatenateLines=FALSE;<br>
+<br><DIV CLASS=normaal>
+<IMG SRC='screenshot.png' ALT='' WIDTH=482 HEIGHT=666 HSPACE=2 VSPACE=2 BORDER=0><DIV CLASS=normaal>
+<br>
+Click on "Start scanning and replacing" and POBS will start working.<br>
+<br>
+While processing POBS will give you information about:<br>
+<ul>
+
+<li>scanned files<br>
+<li>found variables, constants and functions<br>
+<li>the time needed to process them<br>
+<li>excluded variables<br>
+<li>variables found that are consistent with the wildcard variables. I.e. params_xyz is excluded because params_* is listed as an exclude variable.<br>
+</ul><br></TD>
+</TR>
+</TABLE>
+<br>
+<br>
+<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>

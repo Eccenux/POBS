@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>Disadvantages</TITLE>
+<!-- Generated with the Walhalla Content Management System -->
+<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
+</HEAD>
+
+<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
+<TR>
+<TD>
+<H1>Disadvantages</H1><DIV CLASS=normaal>
+<b>Your probably have to adjust some codelines to get it working</b><br>The downside of POBS is that it won't guarantee that your code will work properly without adjustments. This has to do with the way scripting languages like PHP deal with variables. As you probably know you can dynamically define (maybe "use" is a better word) variables in PHP. This poses a problem for POBS or any other Obfuscator. But you can deal with it by scanning your code for things like $$VarName and parse_str and edit your code or add variables to the array of excluded variables ($UdExcVarArray).<br>
+<br>
+I must say though that many of the coding adjustments that I suggest are actually good (and normal) coding practices. Like starting every constant with a lower "c" and putting the rest in uppercase. Or naming all variables of a certain kind according to a naming convention.<br>
+<br>
+See <A HREF="codingtips.htm">Codingtips</A> and <A HREF="tips.htm">Debugtips</A> on how to prevent problems and get your code working (I got my 300 Kb code working without my own advice so there is no need to get discouraged).<br>
+<br><DIV CLASS=normaal>
+<b>No password protection</b><br>POBS will not protect against the proliferation of passwords used in your sourcecode. I.e. if your PHP program connects to a MySQL database you probably use the PHP function "mysql_connect". One of the parameters is a password. POBS doesn't obfuscate the function (since it is not user -defined) nor the password. You might make a deliberate complex function that generates a password but a hacker could just call that function and see what it returns.<br>
+<br>
+For me, protecting against database passwords or stuff is not really important because POBS is essentially targeted at applications that need to be deployed. I.e. on a customers computer. In that situation a customer might have full access to the computer and deals with his own data in the database anyway.<br>
+<br>
+Zend Encoder and Microcode Encoder do protect passwords since they encrypt those too (they probably encrypt the whole PHP file like "WinZip + password" would do).<br>
+<br><DIV CLASS=normaal>
+<b>Beware of inline Javascript in your PHP code</b><br>Formerly I stated that when you were using inline Javascript you need to make adjustments. I was wrong. The only possible problem with inline Javascript I know of, is that you can't let POBS <i>concatenate lines if you haven't ended each Javascript codeline with a semicolon ";"</I>. I guess this doesn't need extra explanation.<br>
+<br>
+POBS does not (and can not easily) discriminate between JavaScript functions and PHP functions. It you declared a Javascript function named "X", POBS will replace this Javascript function and all references to it. <i>As far as I know this will not create problems</i> so there is no need to worry.<br>
+<br>
+If you don't want your Javascript functions to be replaced, i.e. in case you want to debug it more easily, you can add them to $UdExcFuncArray in pobs-ini.inc or you can replace the inline Javascript with Javascript echoed by PHP. An example is shown below:<br>
+<br>
+echo "function JsCheckField() {n";<br>
+echo "&lt;Javascript code lines&gt;n";<br>
+echo "}n";<br>
+<br>
+This way POBS doesn' t consider "JsCheckField()" to be a function that needs replacement.<br>
+<br></TD>
+</TR>
+</TABLE>
+<br>
+<br>
+<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>

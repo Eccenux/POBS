@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>FAQ</TITLE>
+<!-- Generated with the Walhalla Content Management System -->
+<LINK REL=stylesheet HREF='style.css' TYPE='text/css'>
+</HEAD>
+
+<BODY CLASS=bodypage  TOPMARGIN=10 LEFTMARGIN=10 MARGINHEIGHT=10 MARGINWIDTH=10>
+<TABLE CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=100%>
+<TR>
+<TD>
+<H1>FAQ</H1><DIV CLASS=normaal>
+<b>Why wouldn't I use Zend Encoder instead?</b><br><i>Price</i><br>
+I can tell you about my own considerations. I seriously considered Zend Encoder and downloaded it together with the manuals since I thought they where the only option for deploying your application safely. I found the price quite high but that alone it didn't deter me. Also, installation didn't seem easy to me.<br>
+<br>
+<i>Works with other programs</i><br>
+On top of that I already used APC as a cacher. And as far as I know APC and Zend Encoder don't operate in concert. So I would have to install Zend Cache too. (And Zend Optimizer). Obviously, if you already use APC, Zend Encoder or Zend Cache, you can continue doing so with POBS.<br>
+<br>
+<i>Can not be reverse-engineered by a computer</i><br>
+Another consideration is that Zend Encoder doesn't remove information. As far as I understand (correct me if I'm wrong) you can adjust the PHP Engine (not for the everyday coder maybe) and restore the complete sourcecode even if you use an Encoder and/or a Cacher. The kind of encoding Zend Encoder does is reversible. The encoding POBS does is not reversible since the meaning is thrown away. The meaning of the code is only know after spending a lot of time studying it. One would have to give every variable, constant and function a meaningful name which can only be done after finding out the working of every function.<br>
+<br>
+<i>Deployment at ISP without trouble</i><br>
+If you want to deploy a PHP application at an ISP and you want to protect your sourcecode for whatever reason , normally you can't ask them to install something like Zend Encoder for you. In that case, POBS can do the job and you can sleep tight.<br>
+<br>
+<br><DIV CLASS=normaal>
+<b>Why would I favor Zend Encoder over POBS?</b><br>Since I try to be objective and do not claim that POBS is the greatest invention since sliced bread, I guess there certainly are advantages to an encoder like Zend Encoder or Microcode (see "<A HREF="/links.htm">Links</A>").<br>
+<br>
+If the machine, and not just a directory, that runs your program is controlled by you, you can install an encoder. The advantage of an encoder is that it obfuscates everything. It may be compared to zipping your PHP files with a password on top of it.<br>
+POBS obfuscates user-defined variables, functions and constants. Not standard PHP functions, variables or constants. Also, POBS does not obfuscate database passwords or encryption methods that are used inside your PHP program. And it doesn't obfuscate standard text.<br>
+<br><DIV CLASS=normaal>
+<b>With what has POBS been tested?</b><br>POBS has only been tested with PHP 4.0.4 on Linux and Win32. It will probably work on other PHP versions as well since I can't imagine why it wouldn't work. But this is certainly not a guarantee.<br>
+<br><DIV CLASS=normaal>
+<b>What about $$Var?</b><br>Variable variables pose a problem for POBS. But they can easily be overcome.<br>
+<br>
+Consider the following code snippet:<br>
+<br>
+$Var1="Var2";<br>
+$$Var1="Amsterdam";<br>
+echo $Var2; // "Amsterdam"<br>
+<br>
+$Var2 will have the value "Amsterdam"<br>
+<br>
+POBS makes the following code of it:<br>
+<br>
+$V31bff649="Var2";<br>
+$$31bff649="Amsterdam";<br>
+echo $V8c4e34d5;  // empty<br>
+<br>
+As you see POBS has replaced all occurences of $Var2 but not Var2. Therefore this little program will not work as intended. To get it working you need to add Var2 to the $UdExcVarArray in pobs-ini.inc.<br>
+<br><DIV CLASS=normaal>
+<b>Will execution of the scripts be slower?</b><br>Probably not. I haven't noticed nor measured.<br>
+<br><DIV CLASS=normaal>
+<b>Will it increase the size of the PHP script files?</b><br>That depends. But generally not. (Au contraire). If you remove comments and indents and have the lines concatenated your files will, on average lose about 10% of their size. If you only have the variables, constants and functions replaced it will probably result in a slight increase in filesize since the average length of variables and functionames is slightly smaller than 9 (First letter + MD5 of 8 characters).<br>
+<br><DIV CLASS=normaal>
+<b>Can I process selected files of my application?</b><br>Well, yes and no. From version (0.91), POBS automatically checks if the sourcefile is newer than the targetfilet. It then only rewrites the new ones. So if you want to select certain files that you want POBS to replace, just edit the date of the targetfile or remove it.<br>
+<br>
+But remember, although POBS can replace selectively, POBS <i>needs to scan all the files of your application</i>. It must, to be sure it knows all the userdefined functions, variables and constants in your application.<br>
+<br><DIV CLASS=normaal>
+<b>How long does it all take?</b><br>Depending on the total size of your sourcefiles and the number of functions, constants and variables used it might take POBS quite a long time to process them. This has also to do with the incomplete functions that PHP offers and is a major disadvantage to PHP in my opinion. In my case, processing 250 Kb of source in about 40 files takes about 300 seconds on a 300 Mhz machine. If you have suggestions as to how it can be made speedier please let me know.<br>
+<br>
+Standard timeout for PHP is 30 seconds or something. This is probably not enough. In the pobs-ini.inc file you can adjust the timeout. POBS will set it when it is started up. It is necessary though that PHP does not run in "Safe mode". In php.ini you can set "Safe mode" off.<br>
+<br><DIV CLASS=normaal>
+<b>Doesn't APC provide enough security?</b><br>Depending on the security you need, it very well might do so. APC provides a mode (mmap) in which only "compiled" PHP files are stored on the server. These are pretty hard to read and might discourage many hackers from trying to decode them. But it's quite possible to reverse the compiling process by way of another program (a decompiler). So, if you need to deploy an application and want to feel really safe and secure, I don't think a cacher like APC is the way to go. But of course, APC was never intended for such purposes.<br>
+<ul>
+
+<li>APC does not encrypt or throw away information. Machine reversible.</ul>
+
+<ul><li>Zend Encoder does encrypt but doesn't throw away information. Machine reversible.</ul>
+
+<ul><li>POBS encrypts by way of throwing away information. Never completely reversible. Only partly reversible by intensely studying the code.</ul>
+
+<br><DIV CLASS=normaal>
+<b>Shouldn't all software be free and open?</b><br>For me that's like saying: "Shouldn't everyone on earth be peaceful, loving and working together". I rather work with reality than project my ideals on it.<br>
+If everyone works for free I will do likewise. But that isn't the case yet. Contrary to Richard Stallman I don't think all software should be free and open. Open and closed software both have their advantages and disavantages. The one who writes software should decide what he wants to share. In my opinion the same goes for money and property, which is called <A HREF="http://www.libertarian.org" TARGET=STD4>Capitalism or libertarianism </A>.<br>
+<br><DIV CLASS=normaal>
+<b>Can I obfuscate part of my PHP application?</b><br>Nope. For obvious reasons.<br>
+Many PHP applications consist of many separate files that can be included at will. If you replace a functionname in file A you have to replace all occurences of that function in every other PHP program.<br>
+<br>
+<i>BUT</I>, POBS allows you to select the files you want to obfuscate to make processing faster. If you POBSed everything already but made adjustments to just a few files you can instruct POBS to replace just these.<br>
+<br><DIV CLASS=normaal>
+<b>Are there any other PHP Obfuscators?</b><br>I would wish there were many, so I wouldn't have to write my own. But there's only one at <A HREF="http://www.hotscripts.com/Detailed/10841.html" TARGET=STD4><br>
+http://www.hotscripts.com/Detailed/10841.html</A> which is rather limited and not very secure. It deals with variables only. I downloaded the source and concluded it didn't suit my needs. Too bad.<br>
+<br><DIV CLASS=normaal>
+<b>What does obfuscate mean?</b><br>Good question. I had never heard of it before talking to people about my program to obscure PHP code. I always talked of obscuring and couldn't find similar programs (which do not exist anyway) until someone told me it goes under the name of "obfuscator".<br>
+<br>
+This is what Merriam Webster dictionary has to say about it:<br>
+<br>
+Main Entry: ob·fus·cate<br>
+Pronunciation: 'äb-f&-"skAt; äb-'f&s-"kAt, &b-<br>
+Function: transitive verb<br>
+Inflected Form(s): -cat·ed; -cat·ing<br>
+Etymology: Late Latin obfuscatus, past participle of obfuscare, from<br>
+Latin ob- in the way + fuscus dark brown -- more at OB-, DUSK<br>
+Date: 1577<br>
+1 a : DARKEN b : to make obscure<br>
+2 : CONFUSE<br>
+<br><DIV CLASS=normaal>
+<b>Do I need a decoder?</b><br>No. POBS doesn't work that way. What it does is irreversible.<br>
+<br>
+<br><DIV CLASS=normaal>
+<b>Do you offer a money-back guarantee?</b><br>Of course. If, for any reason, POBS does not live up to your expectations, you can send it back and receive every penny you paid for it.<br>
+<br></TD>
+</TR>
+</TABLE>
+<br>
+<br>
+<center>Walhalla Publicaties (c) 2001</center></BODY></HTML>
