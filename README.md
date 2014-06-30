@@ -3,7 +3,7 @@ POBS
 
 POBS is a PHP Obfuscator. This means it "compiles" your PHP files by making them unreadable to a human.   
 
-POBS - Installation
+Installation
 -------------------
 
 Installing POBS is as easy as I could think of. Just unzip the downloaded file and put it a directory that is located under your web server. POBS is a collection of files in just 1 directory.
@@ -14,3 +14,29 @@ If you have a large amount of PHP source to be POBSed, check your `php.ini` and 
 
 After having checked everything and having adjusted the settings in `pobs-ini.inc` you point your browser to `pobs.php` and press `<Enter>`. 
 
+Changes log
+---------------------
+
+### 0.99.1 ###
+
+* Additional configuration variables:
+```php
+$MinimumReplaceableVarLen = 4;	// all below this will not be replaced
+$ReplaceVarsInTabsAndCookies = false;
+$ReplaceVarsInNameField = false;
+```
+* REMOVE COMMENTS <!-- ... --> (currently one line only)
+* Remove empty and semi-empty lines after removing comments
+
+### 0.99.2 ###
+
+Additional configuration variable: `$CopyrightTextFromIni`.
+
+### 0.99.3 ###
+- removed case insensitive replace for most regexpes (PHP and JS are both mostly case sensitive)
+- auto saving log file (html output)
+- nux: do not show numbers in log (better for diffs)
+
+### 0.99.4 ###
+
+txt log file

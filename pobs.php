@@ -6,15 +6,8 @@
 
 	POBS - PHP Obfuscator
 
-	August 10th 2003++
-
-	Version: 0.99nux4
+	Version: 0.99.4
 	
-	0.99nux3
-		- removed case insensitive replace for most regexpes (PHP and JS are both mostly case sensitive)
-		- auto saving log file (html output)
-		- nux: do not show numbers (better for diffs)
-
 	- AUTHOR
 			- Frank Karsten (http://www.walhalla.nl)
 	- ADDING
