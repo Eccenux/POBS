@@ -9,13 +9,19 @@
     use POBS, so configuring this file won't give you too much trouble
     */
     
-    $SourceDir = "e:/work/pobs/test/old";
-    $TargetDir = "e:/work/pobs/test/new";
+    $SourceDir = "D:/_WWW/!_serwer_root/silverfish_kompilacje/sf_inpobs";
+    $TargetDir = "D:/_WWW/!_serwer_root/silverfish_kompilacje/sf_outpobs";
+	
+	// by Nux
+	$MinimumReplaceableVarLen = 4;	// all below this will not be replaced
+	$ReplaceVarsInTabsAndCookies = false;
+	$ReplaceVarsInNameField = false;
+	//
 
     $FontSize = 8;
     $TableColumns = 5;
-    $TimeOut = 5000;
-    $MaxFiles = 2000;       // Maximum of processed files
+    $TimeOut = 8000;
+    $MaxFiles = 4000;       // Maximum of processed files
     $_POBSMaxRepeats = 100; // Maximum cycle repeats - protects against unlimited cycles in case
                             // of condition error
 
@@ -30,7 +36,8 @@
     // this is useful if you have your JavaScript functions stored in an external files
     $JSFileExtArray = array("js");
 
-    $StdExcFileArray = array('Dummy Entry');
+    $StdExcFileArray = array('Dummy Entry',
+	);
 
 
     $LineExclude = '';  // do not obfuscate lines that contain specified patters
@@ -45,33 +52,33 @@
     
     // javascript variables that should not be replaced
     $StdExcJSVarArray = array('Dummy Entry',
-    "value",
-    "selectedIndex",
-    "text",
-    "name",
-    "color",
-    "style",
-    "length",
-    "selection",
-    "new",
-    "var",
-    "editObject",
-    "head",
-    "base",
-    "keywords",
-    "description",
-    "src",
-    "cont",
-    "html",
-    "forms",
-    "head",
-    "row",
-    "i",
-    "j",
-    "k",
-    "title",
-    "content",
-    "type"
+		"value",
+		"selectedIndex",
+		"text",
+		"name",
+		"color",
+		"style",
+		"length",
+		"selection",
+		"new",
+		"var",
+		"editObject",
+		"head",
+		"base",
+		"keywords",
+		"description",
+		"src",
+		"cont",
+		"html",
+		"forms",
+		"head",
+		"row",
+		"i",
+		"j",
+		"k",
+		"title",
+		"content",
+		"type"
     );
     
     // javascript functions that should not be replaced
@@ -80,82 +87,84 @@
     
     // standard variables that should not be replaced
     $StdExcVarArray = array('Dummy Entry',
-    "GLOBALS",
-    "GATEWAY_INTERFACE",
-    "SERVER_NAME",
-    "SERVER_SOFTWARE",
-    "SERVER_PROTOCOL",
-    "REQUEST_METHOD",
-    "QUERY_STRING",
-    "DOCUMENT_ROOT",
-    "HTTP_ACCEPT",
-    "HTTP_ACCEPT_CHARSET",
-    "HTTP_ACCEPT_ENCODING",
-    "HTTP_ENCODING",
-    "HTTP_ENV_VARS",
-    "_ENV",
-    "HTTP_ACCEPT_LANGUAGE",
-    "HTTP_CONNECTION",
-    "HTTP_HOST",
-    "HOST",
-    "HTTP_REFERER",
-    "HTTP_SERVER_VARS",
-    "_SERVER",
-    "HTTP_USER_AGENT",
-    "REMOTE_ADDR",
-    "REMOTE_PORT",
-    "SCRIPT_FILENAME",
-    "SERVER_ADMIN",
-    "SERVER_PORT",
-    "SERVER_SIGNATURE",
-    "PATH_TRANSLATED",
-    "SCRIPT_NAME",
-    "REQUEST_URI",
-    "argv",
-    "argc",
-    "PHPSESSID",
-    "SID",
-    "PHP_SELF",
-    "HTTP_COOKIE_VARS",
-    "_COOKIE",
-    "HTTP_GET_VARS",
-    "_GET",
-    "HTTP_POST_VARS",
-    "_POST",
-    "HTTP_SESSION_VARS",
-    "_SESSION",
-    "HTTP_POST_FILES",
-    "_FILES",
-    "userfile",
-    "userfile_name",
-    "userfile_size",
-    "userfile_type",
-    "this",
-    "_REQUEST",
-    "__FILE__",
-    "__LINE__"
+		"GLOBALS",
+		"GATEWAY_INTERFACE",
+		"SERVER_NAME",
+		"SERVER_SOFTWARE",
+		"SERVER_PROTOCOL",
+		"REQUEST_METHOD",
+		"QUERY_STRING",
+		"DOCUMENT_ROOT",
+		"HTTP_ACCEPT",
+		"HTTP_ACCEPT_CHARSET",
+		"HTTP_ACCEPT_ENCODING",
+		"HTTP_ENCODING",
+		"HTTP_ENV_VARS",
+		"_ENV",
+		"HTTP_ACCEPT_LANGUAGE",
+		"HTTP_CONNECTION",
+		"HTTP_HOST",
+		"HOST",
+		"HTTP_REFERER",
+		"HTTP_SERVER_VARS",
+		"_SERVER",
+		"HTTP_USER_AGENT",
+		"REMOTE_ADDR",
+		"REMOTE_PORT",
+		"SCRIPT_FILENAME",
+		"SERVER_ADMIN",
+		"SERVER_PORT",
+		"SERVER_SIGNATURE",
+		"PATH_TRANSLATED",
+		"SCRIPT_NAME",
+		"REQUEST_URI",
+		"argv",
+		"argc",
+		"PHPSESSID",
+		"SID",
+		"PHP_SELF",
+		"HTTP_COOKIE_VARS",
+		"_COOKIE",
+		"HTTP_GET_VARS",
+		"_GET",
+		"HTTP_POST_VARS",
+		"_POST",
+		"HTTP_SESSION_VARS",
+		"_SESSION",
+		"HTTP_POST_FILES",
+		"_FILES",
+		"_REQUEST",
+		"userfile",
+		"userfile_name",
+		"userfile_size",
+		"userfile_type",
+		"this",
+		"__FILE__",
+		"__LINE__",
+		'debug_msgtext'
     );
 
     // variables, for which their key will be not replaced
     // for exaplle for HTTP_SERVER_VARS['REMOTE_ADDR'], the REMOTE_ADDR string will be not replaced
     $StdExcKeyArray = array('Dummy Entry',
-    "_SERVER",
-    "HTTP_SERVER_VARS",
-    "_ENV",
-    "HTTP_ENV_VARS"
+		"_SERVER",
+		"HTTP_SERVER_VARS",
+		"_ENV",
+		"HTTP_ENV_VARS"
     );
     
     // all functions, that return objects (require special handling)
     $StdObjRetFunctionsArray = array('Dummy Entry',
-    "mysql_fetch_object",
-    "pg_fetch_object"
+		"mysql_fetch_object",
+		"pg_fetch_object"
     );
 
     // types of comments that have to be replaced
     // available types are: '/**/','//' and '#'
     $StdReplaceComments = array('Dummy Entry',
-    "/**/",
-    "//"
+		"/**/",
+		"//",
+		//"HTML".
     );
 
     // variables in this array will be not replaced
@@ -165,12 +174,19 @@
     $UdExcConstArray = array('Dummy Entry');
 
     // functions in this array will be not replaced
-    $UdExcFuncArray = array('Dummy Entry');
+    $UdExcFuncArray = array('Dummy Entry',
+		'myErrorHandler_std',
+		'myErrorHandler_sql',
+		'myErrorHandler',
+		'close',
+	);
     
     // files that will be excluded from obfuscation
     // you can use start convertion, like '*cat_*.php'
     // the files will be copied to the target directory
-    $UdExcFileArray = array('Dummy Entry');
+    $UdExcFileArray = array('Dummy Entry',
+		'konf.php',
+	);
 
     // directories that will be excluded from obfuscation
     // you can use star convention, like '/*mydirname*'
