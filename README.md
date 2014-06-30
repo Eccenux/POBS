@@ -40,3 +40,54 @@ Additional configuration variable: `$CopyrightTextFromIni`.
 ### 0.99.4 ###
 
 txt log file
+
+### 0.99.5 ###
+
+* Additional configuration:
+```php
+// if true then just run dummy parsing (will not change any files nor create directories)
+$DoNotCopyOrCreateAnything = false;
+```
+* Remove elapsed time for individual files.
+* Fixed ReplaceJS form option.
+
+
+### 0.99.6 ###
+
+- allow running with GET (with default options)
+- passing some extra options when running with GET
+- mild security: allow source and target paths to be relative *only* to current directory
+- allow changing copyright year in default text taken form copyright ini file.
+
+Example URL:
+
+	pobs.php?getEnabled=lakslkals&inDir=in&outDir=out/test&NewCopyrightYear=2014
+
+New configuration:
+```php
+$RunWithGetSecret = 'lakslkals';	// "secret" string to be passed with GET request
+
+// things not set explicitly otherwise
+$RunWithGetDefaults = array (
+	'ReplaceClasses' => '1',
+	'ReplaceFunctions' => '1',
+	'ReplaceVariables' => '1',
+	'RemoveComments' => '1',
+	'KeptCommentCount' => '0',
+	'RemoveIndents' => '1',
+	'ReplaceNewer' => 'on',
+	'RecursiveScan' => 'on',
+	'CopyAllFiles' => 'on',
+	'CopyrightPHP' => '1',
+	'CopyrightJS' => '1',
+	'OK' => 'Start processing',
+);
+
+// allow source and target paths to be relative only to current dir (or dir given below)
+$AllowOnlySubDirs = true;
+$SourceTargetDirsBase = "./io/";	// use "./" for base in pobs dir
+
+// copyright replacement config (works only if NewCopyrightYear is passed with GET or POST)
+$CopyrightYearPattern= "#(Copyright [0-9]+\-)([0-9]+)#";
+$CopyrightYearReplacement= "\${1}%NewYear%";	// @note must containt "%NewYear%" for the replacement to work
+```

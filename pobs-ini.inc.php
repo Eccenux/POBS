@@ -8,11 +8,37 @@
     file. It is assumed you are familiar with PHP code syntax if you 
     use POBS, so configuring this file won't give you too much trouble
     */
-    
-    $SourceDir = "D:/_WWW/!_serwer_root/silverfish_kompilacje/sf_inpobs";
-    $TargetDir = "D:/_WWW/!_serwer_root/silverfish_kompilacje/sf_outpobs";
+	
+	// for testing
+	// just run dummy parsing and do not write to any files or create directories
+	$DoNotCopyOrCreateAnything = false;
+	
+	// input/output directories
+	$SourceDir = "in";
+	$TargetDir = "out";
 	
 	// by Nux
+	$RunWithGetSecret = 'klj342klj';	// "secret" string to be passed with GET request
+	// things not set explicitly otherwise
+	$RunWithGetDefaults = array (
+		'ReplaceClasses' => '1',
+		'ReplaceFunctions' => '1',
+		'ReplaceVariables' => '1',
+		'RemoveComments' => '1',
+		'KeptCommentCount' => '0',
+		'RemoveIndents' => '1',
+		'ReplaceNewer' => 'on',
+		'RecursiveScan' => 'on',
+		'CopyAllFiles' => 'on',
+		'CopyrightPHP' => '1',
+		'CopyrightJS' => '1',
+		'OK' => 'Start processing',
+	);
+
+	// allow source and target paths to be relative only to current dir (or dir given below)
+	$AllowOnlySubDirs = true;
+	$SourceTargetDirsBase = "./io/";	// use "./" for base in pobs dir
+
 	$MinimumReplaceableVarLen = 4;	// all below this will not be replaced
 	$ReplaceVarsInTabsAndCookies = false;
 	$ReplaceVarsInNameField = false;
@@ -27,6 +53,11 @@
 		$CopyrightTextFromIni = '';
 	}
 	//
+
+	// Nux: copyright replacement config (works only if NewCopyrightYear is passed with GET or POST)
+	$CopyrightYearPattern= "#(Copyright [0-9]+\-)([0-9]+)#";
+	$CopyrightYearReplacement= "\${1}%NewYear%";	// @note must containt "%NewYear%" for the replacement to work
+	// Nux: copyright replacement config : END
 
     $FontSize = 8;
     $TableColumns = 5;
@@ -201,9 +232,11 @@
 
     // functions in this array will be not replaced
     $UdExcFuncArray = array('Dummy Entry',
+		'debug',
 		'myErrorHandler_std',
 		'myErrorHandler_sql',
 		'myErrorHandler',
+		'array_sort_cmp_by_id',
 		'close',
 	);
     
@@ -219,5 +252,7 @@
     // it is recommended to use '/' in the beginning of directory name if you want to filter directory beginning with specified string
     // WARNING: specified directories with all its content will be NOT processed and NOT copied to the target directory
     // if you are using them in your PHP code, you have to copy them by hand
-    $UdExcDirArray = array('Dummy Entry');
+    $UdExcDirArray = array('Dummy Entry',
+		'/.svn'
+	);
 ?>

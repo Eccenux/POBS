@@ -6,7 +6,7 @@
 
 	POBS - PHP Obfuscator
 
-	Version: 0.99.4
+	Version: 0.99.6
 	
 	- AUTHOR
 			- Frank Karsten (http://www.walhalla.nl)
@@ -46,6 +46,46 @@
 <?
 	if (!empty($_POST) ) extract($_POST);
 	else if (!empty($HTTP_POST_VARS)) extract($HTTP_POST_VARS);
+	
+	// Nux: show paramaters passed in form
+	// echo "<textarea style='width:100%;height:200px'>".htmlspecialchars(var_export($_POST, true))."</textarea>";
+
+	// Nux: allow running with GET : START
+	// @note Only some parameters can be changed
+	require_once './inc/requestUtils.php';
+	if (!empty($_GET['getEnabled']) && $_GET['getEnabled'] == $RunWithGetSecret)
+	{
+		// defaults
+		extract($RunWithGetDefaults);
+		// parsing
+		$OK = true;
+		$SourceDir = requestUtils::pf_getString('inDir', $SourceDir);
+		$TargetDir = requestUtils::pf_getString('outDir', $TargetDir);
+	}
+	// Nux: allow running with GET : END
+	
+	// Nux: mild security - only allow changes down the current tree: START
+	require_once './inc/dirUtils.php';
+	if ( isset( $OK ) && !empty($AllowOnlySubDirs) )
+	{
+		$SourceDir = $SourceTargetDirsBase . pcDirUtils::pf_makeSafeFilename($SourceDir, true);
+		$TargetDir = $SourceTargetDirsBase . pcDirUtils::pf_makeSafeFilename($TargetDir, true);
+	}
+	// Nux: mild security - only allow changes down the current tree: END
+	
+	// Nux: copyright year replacement
+	$CopyrightText = empty($CopyrightText) ? $CopyrightTextFromIni : $CopyrightText;
+	if ( !empty($CopyrightYearPattern) )
+	{
+		$NewCopyrightYear = requestUtils::pf_getString('NewCopyrightYear', null);
+		if ( !empty($NewCopyrightYear) )
+		{
+			$CopyrightYearReplacement = str_replace("%NewYear%", $NewCopyrightYear, $CopyrightYearReplacement);
+			$CopyrightTextFromIni = $CopyrightText = preg_replace($CopyrightYearPattern, $CopyrightYearReplacement, $CopyrightText);
+		}
+	}
+	// Nux: copyright year replacement : END
+	
 
 	if ( isset( $OK ) ) CheckSafeMode();
 
@@ -132,6 +172,7 @@ function ShowScreen() {
 	global $TimeOut, $FileExtArray, $JSFileExtArray, $TargetDir, $SourceDir, $UdExcFuncArray, $UdExcVarArray, $UdExcConstArray, $StdObjRetFunctionsArray;
 	global $ReplaceFunctions, $ReplaceConstants, $ReplaceVariables, $RemoveComments, $RemoveIndents, $ConcatenateLines, $CopyrightTextFromIni;
 	global $FilesToReplaceArray, $UdExcFileArray, $UdExcDirArray;
+	global $AllowOnlySubDirs, $SourceTargetDirsBase;
 
 ?>
 	<TABLE CELLPADDING=0 WIDTH=100% CELLSPACING=0 BORDER=0>
@@ -153,9 +194,17 @@ function ShowScreen() {
 				<FORM METHOD="POST" ACTION="<? echo $GLOBALS['HTTP_SERVER_VARS']['PHP_SELF']?>">
 				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP><b>TimeOut (sec)</b></TD></TR>
 				<TR><TD><? echo $TimeOut ?></TD></TR>
-				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP><b>Source Directory</b></TD></TR>
+				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP><b>Source Directory</b>
+					<? if (!empty($AllowOnlySubDirs)) { ?>
+						(will be realtive to: "<? echo $SourceTargetDirsBase ?>")
+					<? } ?>
+				</TD></TR>
 				<TR><TD><INPUT TYPE=TEXT NAME=SourceDir VALUE="<? echo $SourceDir ?>" SIZE=70></TD></TR>
-				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP><b>Target Directory</b></TD></TR>
+				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP><b>Target Directory</b>
+					<? if (!empty($AllowOnlySubDirs)) { ?>
+						(will be realtive to: "<? echo $SourceTargetDirsBase ?>")
+					<? } ?>
+				</TD></TR>
 				<TR><TD><INPUT TYPE=TEXT NAME=TargetDir VALUE="<? echo $TargetDir ?>" SIZE=70></TD></TR>
 				<TR><TD BGCOLOR=#E6E6E6 VALIGN=TOP>
 				<TABLE WIDTH=100% BORDER=0 CELLSPACING=0 CELLPADDING=0>
@@ -255,10 +304,10 @@ function GetWildCards() {
 	foreach($UdExcDirArray as $value)
 	{
 		// convert it to regular expression
-		$value = str_replace(".", "\\.", $value);
 		$value = str_replace("\\\\", "\\/", $value);
 		$value = str_replace("\\", "\\/", $value);
 		$value = str_replace("/", "\\/", $value);
+		$value = str_replace(".", "\\.", $value);
 		$value = str_replace("*", ".*", $value);
 		$value = "/$value/i";
 		$UdExcDirArrayRegEx[] = $value;
@@ -412,7 +461,7 @@ function ScanSourceFiles( $path = '' )
 							if(findScriptTagInFile($rgl, $LineArray))
 							{
 								// it is JS function
-								if ( empty($JSFuncArray[$FunctieNaam]) and !(in_array($FunctieNaam,$StdExcJSFuncArray)))
+								if ( $ReplaceJS and empty($JSFuncArray[$FunctieNaam]) and !(in_array($FunctieNaam,$StdExcJSFuncArray)))
 								{
 									$JSFuncArray[$FunctieNaam]="F".substr(md5($FunctieNaam), 0,8);
 								}
@@ -454,13 +503,15 @@ function ScanSourceFiles( $path = '' )
 				{
 					// file was excluded, just copy it
 					echo "- <font color=blue>Excluded</font>, just copy Filename: ".substr($fileName, 1)."<br>\n";
-					copy(  $SourceDir.$fileName,  $TargetDir.$fileName );
+					if ( !$DoNotCopyOrCreateAnything )
+						copy(  $SourceDir.$fileName,  $TargetDir.$fileName );
 				}
 			}
 			elseif ( $CopyAllFiles )
 			{
 				echo "- Copy Filename: ".substr($fileName, 1)."<br>\n";
-				copy(  $SourceDir.$fileName,  $TargetDir.$fileName );
+				if ( !$DoNotCopyOrCreateAnything )
+					copy(  $SourceDir.$fileName,  $TargetDir.$fileName );
 			}
 		}
 		else if ( $RecursiveScan && is_dir( $SourceDir.$fileName ) && $FileNaam != "." && $FileNaam != ".." )
@@ -483,9 +534,16 @@ function ScanSourceFiles( $path = '' )
 
 				if(!is_dir($TargetDir.$fileName))
 				{
-					if ( @mkdir( $TargetDir.$fileName, 0707 ) ) echo 'Creating Directory : '.$TargetDir.$fileName.'.<br>';
-					else echo '- Creating Directory : '.$TargetDir.$fileName.' <FONT COLOR=orange>Warning: Creation failed.</b></FONT><br>';
-					echo "\n";
+					if ( !$DoNotCopyOrCreateAnything )
+					{
+						if ( @mkdir( $TargetDir.$fileName, 0707 ) ) echo 'Creating Directory : '.$TargetDir.$fileName.'.<br>';
+						else echo '- Creating Directory : '.$TargetDir.$fileName.' <FONT COLOR=orange>Warning: Creation failed.</b></FONT><br>';
+						echo "\n";
+					}
+					else
+					{
+						echo 'Creating Directory : '.$TargetDir.$fileName.'.<br>';
+					}
 				}
 
 				ScanSourceFiles( $fileName );
@@ -583,7 +641,7 @@ function WriteTargetFiles() {
 function SearchVars($Line)
 {
 	global $VarArray, $StdExcVarArray, $StdExcKeyArray, $UdExcVarArray, $UdExcVarArrayWild, $UdExcVarArrayDliw, $ObjectVarArray, $JSVarArray, $StdObjRetFunctionsArray;
-	global $MinimumReplaceableVarLen;	// by nux
+	global $MinimumReplaceableVarLen, $ReplaceJS;	// by nux
 
 	// special handling for functions returning objects
 	foreach($StdObjRetFunctionsArray as $Key => $Value )
@@ -601,39 +659,41 @@ function SearchVars($Line)
 
 	// search in javascript code
 
-
-	preg_match_all('/var[ \t]+([0-9a-zA-Z_]+)[ \t]*[\=;]+/', $Line, $matches);
-//	preg_match_all('/var(?:[ \t]+|[ \t\,\=a-zA-Z0-9_]+[ \t,])([a-zA-Z0-9_]+)[ \t]*[\=\;\,]/', $Line, $matches);
-
-	foreach($matches[1] as $mkey)
+	if ($ReplaceJS)
 	{
-		$orig = $mkey;
-		$VarName = $orig;
+		preg_match_all('/var[ \t]+([0-9a-zA-Z_]+)[ \t]*[\=;]+/', $Line, $matches);
+	//	preg_match_all('/var(?:[ \t]+|[ \t\,\=a-zA-Z0-9_]+[ \t,])([a-zA-Z0-9_]+)[ \t]*[\=\;\,]/', $Line, $matches);
 
-		if (strlen($VarName)>=$MinimumReplaceableVarLen && !$JSVarArray[$VarName] && !(in_array($VarName,$StdExcVarArray)) && !(in_array($VarName,$UdExcVarArray)))
+		foreach($matches[1] as $mkey)
 		{
-			// check in Wildcards Array
-			foreach( $UdExcVarArrayWild as $Key => $Value )
-			{
-				if (substr($VarName, 0, strlen($Value)) == $Value )
-				{
-					echo 'Variable with name '.$VarName.' added to $UdExcVarArray.<br>';
-					array_push( $UdExcVarArray, $VarName ); // add to excluded Variables array
-				}
-			}
+			$orig = $mkey;
+			$VarName = $orig;
 
-			// SB check in Dliwcards Array (the wild part's on the front)
-			foreach( $UdExcVarArrayDliw as $Key => $Value )
+			if (strlen($VarName)>=$MinimumReplaceableVarLen && !$JSVarArray[$VarName] && !(in_array($VarName,$StdExcVarArray)) && !(in_array($VarName,$UdExcVarArray)))
 			{
-				if (substr($VarName, 0 - strlen( $Value ) ) == $Value )
+				// check in Wildcards Array
+				foreach( $UdExcVarArrayWild as $Key => $Value )
 				{
-					echo 'Variable with name '.$VarName.' added to $UdExcVarArray.<br>';
-					array_push( $UdExcVarArray, $VarName ); // add to excluded Variables array
+					if (substr($VarName, 0, strlen($Value)) == $Value )
+					{
+						echo 'Variable with name '.$VarName.' added to $UdExcVarArray.<br>';
+						array_push( $UdExcVarArray, $VarName ); // add to excluded Variables array
+					}
 				}
-			}
 
-			if (!(in_array($VarName,$UdExcVarArray)))	// check again in Excluded Variables Array
-				$JSVarArray[$VarName]= 'V'.substr(md5($VarName), 0,8);
+				// SB check in Dliwcards Array (the wild part's on the front)
+				foreach( $UdExcVarArrayDliw as $Key => $Value )
+				{
+					if (substr($VarName, 0 - strlen( $Value ) ) == $Value )
+					{
+						echo 'Variable with name '.$VarName.' added to $UdExcVarArray.<br>';
+						array_push( $UdExcVarArray, $VarName ); // add to excluded Variables array
+					}
+				}
+
+				if (!(in_array($VarName,$UdExcVarArray)))	// check again in Excluded Variables Array
+					$JSVarArray[$VarName]= 'V'.substr(md5($VarName), 0,8);
+			}
 		}
 	}
 
@@ -1321,11 +1381,18 @@ function ReplaceThem($FileName)
 		$contents = "<?\n$CopyrightText\n?>\n".$contents;
 	}
 
-	$FdWrite = fopen( $FileWrite, 'w' );
-	$NumberOfChars = fwrite( $FdWrite, $contents );
-	fclose( $FdWrite );
-	clearstatcache();
-	$GLOBALS['TotalFileSizeWrite'] += filesize( $FileWrite );
+	if ( !$DoNotCopyOrCreateAnything )
+	{
+		$FdWrite = fopen( $FileWrite, 'w' );
+		$NumberOfChars = fwrite( $FdWrite, $contents );
+		fclose( $FdWrite );
+		clearstatcache();
+		$GLOBALS['TotalFileSizeWrite'] += filesize( $FileWrite );
+	}
+	else
+	{
+		$GLOBALS['TotalFileSizeWrite'] += strlen( $contents );
+	}
 }
 
 function DisplayArray($ArrayName, $HeaderText="", $BgColor="FFF0D0")
@@ -1387,35 +1454,40 @@ function CheckSafeMode()
 	//
 	// LOG
 	//
-	$buffer = ob_get_flush();
-	$log_file_path = rtrim($TargetDir,'/').'/!_pobs.log.html';
-	
-	// write html version
-	file_put_contents($log_file_path, $buffer);
-	
-	// cleanup for txt version
-	$buffer	= preg_replace(
-		array(
-			//'##',
-			'#<(head|script|style)([^a-z:<>].*?)?>[\s\S]*?</\1>#i',
-			'#</?(br|td|tr|table|h[1-9]|p|div)([^a-z:<>].*?)?>#i',
-			'#</?(html|body|hr|font|b|i)([^a-z:<>].*?)?>#i',
-			'#\n{2,}#',
-			'#&nbsp;#',
-			'/(&(?:gt|lt|amp|quot|#[0-9]);)/e',
-		)
-		,
-		array(
-			//'',
-			"",		// remove contents of tags (and tags) like <head> and <script>
-			"\n",	// new line after <br>, <p> and such
-			"",		// remove some tags like <html> and <font>
-			"\n",	// remove extra lines after replacements
-			" ",	// nbsp -> space
-			"html_entity_decode('\\1')",	// entities translation
-		)
-		, $buffer);
-	
-	// write txt version
-	file_put_contents($log_file_path.".txt", $buffer);
+	if ( isset( $OK ) ) // if action parameter in querystring
+	{
+		$buffer = ob_get_flush();
+		$log_file_path = rtrim($TargetDir,'/').'/!_pobs.log.html';
+		
+		// write html version
+		file_put_contents($log_file_path, $buffer);
+		
+		// cleanup for txt version
+		$buffer	= preg_replace(
+			array(
+				//'##',
+				'#<(head|script|style)([^a-z:<>].*?)?>[\s\S]*?</\1>#i',
+				'#</?(br|td|tr|table|h[1-9]|p|div)([^a-z:<>].*?)?>#i',
+				'#</?(html|body|hr|font|b|i)([^a-z:<>].*?)?>#i',
+				'#\n{2,}#',
+				'#&nbsp;#',
+				'/(&(?:gt|lt|amp|quot|#[0-9]);)/e',
+				'/ - Elapsed Time: [0-9]+ sec./',
+			)
+			,
+			array(
+				//'',
+				"",		// remove contents of tags (and tags) like <head> and <script>
+				"\n",	// new line after <br>, <p> and such
+				"",		// remove some tags like <html> and <font>
+				"\n",	// remove extra lines after replacements
+				" ",	// nbsp -> space
+				"html_entity_decode('\\1')",	// entities translation
+				"",		// remove elapsed time for individual files
+			)
+			, $buffer);
+		
+		// write txt version
+		file_put_contents($log_file_path.".txt", $buffer);
+	}
 ?>
