@@ -12,7 +12,23 @@ Before executing POBS you are advised to read the manual that is provided in the
 
 If you have a large amount of PHP source to be POBSed, check your `php.ini` and see whether it runs in "Safe mode" (also, POBS warns for it). If it does, POBS can not adjust the timeout setting as indicated in `pobs-ini.inc` and the processing might be terminated before POBS has finished the replacement of all your PHP code files. You might need to restart your web server after adjusting the `php.ini` file.
 
-After having checked everything and having adjusted the settings in `pobs-ini.inc` you point your browser to `pobs.php` and press `<Enter>`. 
+After having checked everything and having adjusted the settings in `pobs-ini.inc` you point your browser to `pobs.php` and press `<Enter>`.
+
+Naming conventions
+-------------------
+In some occasions POBS might change too much. Mostly this will happen if you mix JavaScript with PHP and happen to have e.g. PHP post variable named the same as JavaScript variable. This will result in a non-working code.
+
+You can of course ignore this and only add exceptions when it is necessary.
+
+But to avoid this problem prematurely you should use prefixes in new projects for your PHP variables, functions and such. You can for example use below conventions.
+
+### Variables ###
+* standard variables: "pv_" ("$pv_wartosc", nie "$wartosc") 
+* GET/POST: "rv_" ("rv_kid", nie "kid")
+
+### Functions and classes ###
+* functions and methods: "pf_" (`pf_someFunction`, instead of `someFunction`)
+* classes: "pc_" (`pc_SomeClass`, instead of `SomeClass`)
 
 Changes log
 ---------------------
