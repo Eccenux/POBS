@@ -16,6 +16,16 @@
 	$MinimumReplaceableVarLen = 4;	// all below this will not be replaced
 	$ReplaceVarsInTabsAndCookies = false;
 	$ReplaceVarsInNameField = false;
+	$CopyrightTextFromIni = 'pobs-ini-copyright.txt';
+	// get
+	if (!empty($CopyrightTextFromIni) && file_exists($CopyrightTextFromIni))
+	{
+		$CopyrightTextFromIni = file_get_contents($CopyrightTextFromIni);
+	}
+	else
+	{
+		$CopyrightTextFromIni = '';
+	}
 	//
 
     $FontSize = 8;
@@ -78,7 +88,9 @@
 		"k",
 		"title",
 		"content",
-		"type"
+		"type",
+		"res_p",
+		"res_u",
     );
     
     // javascript functions that should not be replaced
@@ -185,7 +197,7 @@
     // you can use start convertion, like '*cat_*.php'
     // the files will be copied to the target directory
     $UdExcFileArray = array('Dummy Entry',
-		'konf.php',
+		'_konf.php',
 	);
 
     // directories that will be excluded from obfuscation

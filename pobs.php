@@ -7,7 +7,7 @@
 
 	August 10th 2003++
 
-	Version: 0.99nux1
+	Version: 0.99nux2
 
 	- AUTHOR
 			- Frank Karsten (http://www.walhalla.nl)
@@ -131,7 +131,7 @@
 
 function ShowScreen() {
 	global $TimeOut, $FileExtArray, $JSFileExtArray, $TargetDir, $SourceDir, $UdExcFuncArray, $UdExcVarArray, $UdExcConstArray, $StdObjRetFunctionsArray;
-	global $ReplaceFunctions, $ReplaceConstants, $ReplaceVariables, $RemoveComments, $RemoveIndents, $ConcatenateLines;
+	global $ReplaceFunctions, $ReplaceConstants, $ReplaceVariables, $RemoveComments, $RemoveIndents, $ConcatenateLines, $CopyrightTextFromIni;
 	global $FilesToReplaceArray, $UdExcFileArray, $UdExcDirArray;
 
 ?>
@@ -201,15 +201,7 @@ function ShowScreen() {
 					<b>Copyright Text</b> (to put on top of every processed file)<br>
 					<INPUT TYPE=CHECKBOX NAME="CopyrightPHP" value=1 checked>on top of PHP files<br>
 					<INPUT TYPE=CHECKBOX NAME="CopyrightJS" value=1 checked>on top of JavaScript files<br>
-					<TEXTAREA name="CopyrightText" ROWS=9 COLS=70 style="width:100%">/* ------------------------------------------------------------------------ *\
-	Copyright 2007-2008 MOL sp. z o.o. Wszelkie prawa zastrzezone.
-
-	Uzytkownicy oprogramowania nie moga modyfikowac zadnych plikow
-	PHP i JS za wyjatkiem plikow konfiguracyjnych konf.php
-	znajdujacych sie w podkatalogach:
-	* admnk/inc
-	* molik/inc
-\* ------------------------------------------------------------------------ */</TEXTAREA>
+					<TEXTAREA name="CopyrightText" ROWS=9 COLS=70 style="width:100%"><? echo $CopyrightTextFromIni ?></TEXTAREA>
 				</TD></TR>
 				<TR>
 					<TD BGCOLOR=#E6E6E6 ALIGN=CENTER VALIGN=TOP>
