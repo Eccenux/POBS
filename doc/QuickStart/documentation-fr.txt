@@ -1,0 +1,148 @@
+-----------------------------------------------------------------
+POBS - Version 0.99 August 10th, 2003
+-----------------------------------------------------------------
+
+Attention: La version 0.92 permet de mettre à jour automatiquement
+les fichiers modifiés depuis la dernière utilisation de POBS. Si vous
+souhaitez forcer la regénération de certains fichiers, il faut d'abord
+effacer la version "codée".
+
+Vous pouvez ajuster ces variables dans le fichier pobs-ini.inc.php.
+
+$TimeOut
+$FontSize
+$TableColumns
+
+-----------------------------------------------------------------
+Le fichier pobs-ini.inc.php
+
+Ce fichier contrôle le comportement général de POBS. POBS va
+inclure ce fichier s'il se trouve dans le même réprtoire que pobs.php.
+Ce n'est pas un veritable fichier ini, mais simplement un fichier texte
+contenant le code PHP. Vous devez connaitre les bases du PHP
+et le fonctionnement général de POBS avant de modifier ce fichier.
+ 
+POBS ne fonctionne pas si les repertoires source et destination sont
+identique. Verifiez que le répertoire source est autorisé en lecture et
+le répertoire de destination en ecriture. Les répertoires sont
+sensibles à la casse (excepté sous Win32).
+
+Vous pouvez utiliser les slashes ( / ) aussi bien sous Unix que sous
+Win32.
+
+-----------------------------------------------------------------
+Le rapport
+
+Pendant qu'il s'execute, POBS va généré un rapport sur les variables,
+constantes et fonctions trouvées. Pour vous aider dans le
+debuggage vous pouvez imprimer au sauvegarder le rapport HTML.
+
+Vous pouvez définir le nombre de colonnes et la taille de la police
+utilisée dans le rapport. Si vous souhaitez imprimer le rapport le
+nombre par défaut (5 colonnes) sera sans doute trop grand.
+
+-----------------------------------------------------------------
+Complexification du code généré par POBS
+
+Pour complexifié et obscursir encore plus votre code source, vous
+pouvez supprimer les commentaires et les indentations. Si le resultat
+obtenu produit un code buggé decocher "ConcatenateLines".
+
+Il est fortement recommandé de ne pas activer en production le
+changement des variables. Vous pourrez l'utiliser que si le script
+fonctionne bien avec les constantes les variables et les fonctions.
+
+La concaténation des lignes peut poser problème avec du code
+JavaScript ou  du HTML inclus entre les tags <pre>...</pre>.
+
+function JsCheckField() {
+var1="x"
+var2="y"
+} 
+
+Dans l'exemple, ci dessus, la concaténation va entrainer un code
+erroné entrainant alors une erreur JavaScript.
+
+function JsCheckField() {var1="x"var2="y"} 
+
+Pour éviter cela, vous pouvez :
+* désactiver la concatenation
+* afficher le Javascript comme ceci echo "function JsCheckField() {\n";
+* Finir chaque ligne javascript avec ";" (syntaxe normale)
+
+
+-----------------------------------------------------------------
+Fichier à scanner et transformer
+
+Ne pas utiliser de wildcards (*, ?) ou de points. Juste des caractères
+alphanumeriques.
+
+
+-----------------------------------------------------------------
+Options
+
+Analyser, remplacer et ecrire vos fichier peut prendre assez
+longtemps. Afin de ne pas avoir d'erreur de timeout (dependant de
+votre processeur et de la taille totale des fichiers à transformer).
+A titre indicatif, pour tranformer 250 Ko de code PHP, un timeout de
+500 seconds suffit pour un processeur à 300 Mhz.
+
+Exclure certains fichiers :
+Vous voudrez probablement exclure des fichiers de la transformation
+(comme par exemple certaines classes PHP). Pour cela, éditer la
+variable $StdExcFileArray.
+
+Ne pas effacer le Dummy Entry sinon vous risquer d'obtenir de
+mauvais résultats.
+
+
+-----------------------------------------------------------------
+Tableau des variables à exclure
+
+PHP propose une vaste liste de variables prédéfinies pour chaque
+script. Beaucoup de ces variables ne sont pas complétement
+documentés et dependent de la configuration du seveur sur lequel
+PHP tourne. Certaines de ces variables ne sont pas accessible
+quand PHP est executé en ligne de commande.
+
+Ne supprimer pas certaines entrées si elles produisent des erreurs
+PHP. Pour garder ce tableau petit, n'ajouter que des variables qui
+sont clairement définies par PHP.
+
+Pour ajouter vos propres variables à exclure, il est recommandé
+d'utiliser le tableau $UdExcVarArray
+
+PHP possède aussi des constantes prédéfinies comme
+__LINE__ , __FILE__ and E_WARNING. POBS peut automatiquement
+exclure toutes ces constantes et va seulement remplacer les
+constantes défini explicitement par vous avec la commande "define".
+
+Exclure certaines variables
+Vous voulez probablement exclure certaines variables. C'est
+particulièrement utile quand vous utilisez ces variables dans une 
+Query_String.
+Ex: http://www.domain.com/phpprogram.php?uid=234&action=select. 
+Dans cette exemple vous avez besoin d'ajouté au minimum "uid" et 
+"action" dans le tableau ci-dessus pour permettre le bon
+fonctionnement de votre script.
+
+Ne pas utiliser le $ pour indiquer une variable.
+Le nom des variables, constantes et fonctions sont sensible à la
+casse (bien que PHP ne le soit pas).
+
+Ne pas effacer le Dummy Entry sinon vous risquer d'obtenir de
+mauvais résultats.
+
+**** WILDCARDS
+
+Vous ne pouvez utiliser les WILDCARDS uniquement dans
+$UdExcVarArray. Vous ne pouvez utiliser "?" mais seulement "*"
+à la fin ou au debut du nom de la variable.
+
+Si vous definissez proprement vos constantes, vous n'aurez
+probablement pas besoin d'ajouter les noms de constantes dans
+$UdExcConstArray. Mon conseil est de les nommer comme : cERROR,
+cHTML or cDOMAIN. Demarrer avec un "c" minuscule pour indiquer
+une constant et tout les autres caractères en majucules.
+Cela permet de les definir de manière differente d'un tag ou
+d'une propriété HTML.
