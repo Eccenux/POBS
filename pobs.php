@@ -1,5 +1,6 @@
 <?
 	error_reporting(E_ERROR | E_WARNING | E_PARSE);
+	ob_start();
 
 	/*
 
@@ -7,7 +8,12 @@
 
 	August 10th 2003++
 
-	Version: 0.99nux2
+	Version: 0.99nux3
+	
+	0.99nux3
+		- removed case insensitive replace for most regexpes (PHP and JS are both mostly case sensitive)
+		- auto saving log file (html output)
+		- nux: do not show numbers (better for diffs)
 
 	- AUTHOR
 			- Frank Karsten (http://www.walhalla.nl)
@@ -549,7 +555,9 @@ function WriteTargetFiles() {
 		}
 
 		echo '<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR>';
-		echo '<TR><TD>'.$count.' - '.$FileName.'</TD><TD>';
+		//echo '<TR><TD>'.$count.' - '.$FileName.'</TD><TD>';
+		// nux: do not show numbers (better for diffs)
+		echo '<TR><TD> # '.$FileName.'</TD><TD>';
 		if ( $ReplaceFile ) {
 			$FileStartTime = time();
 			echo ': <FONT COLOR=red>Replaced</FONT>';
@@ -928,7 +936,8 @@ function ReplaceThem($FileName)
 		{
 			if ( strlen($Key) && strpos(strtolower($contents), strtolower($Key)) !== FALSE ) // to speed up things, check if variable name is, in any way, present in the file
 			{
-				$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+				//$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+				$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/","\\1".$Value."(", $contents); //werkt
 
 				if ($ReplaceObjects)
 				{
@@ -936,11 +945,14 @@ function ReplaceThem($FileName)
 				}
 				if ($ReplaceClasses)
 				{
-					$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+					//$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+					$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1class '.$Value.'\3', $contents); // class declaration
 				}
 
-				$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
-				$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+				//$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+				$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+				//$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+				$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/','\1new '.$Value.'\3', $contents); // extended or derived class declaration
 			}
 		}
 	}
@@ -983,7 +995,8 @@ function ReplaceThem($FileName)
 
 					if ( !in_array($Key, $StdExcJSVarArray) )
 					{
-						$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);  // javascript variables
+						//$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);  // javascript variables
+						$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/s','\1'.$Value.'\3', $orig);  // javascript variables
 						// $replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/is','\1'.$Value.'\3', $replaced);  // javascript variables
 
 						// $replaced = preg_replace('/(.*var[ \t\,a-zA-Z0-9_]+)('.$Key.')([ \t]*[\=\;\,])/Uis','\1'.$Value.'\3', $replaced);  // javascript var defines (var XXX;)
@@ -1022,7 +1035,8 @@ function ReplaceThem($FileName)
 				if ($ReplaceVarsInTabsAndCookies)	// by nux
 				{
 					$contents = preg_replace('/\$(GLOBALS|HTTP_COOKIE_VARS|HTTP_POST_VARS|HTTP_GET_VARS|HTTP_SESSION_VARS|_REQUEST|_FILES|_SERVER|_ENV|_POST|_COOKIE|_GET|_SESSION)([ \t]*)\[(["\' \t]*)'.$Key.'(["\' \t]*)\]/m', '$\1[\3'.$Value.'\4]', $contents ); // var in Tabs
-					$contents = preg_replace('/(setcookie|session_register|session_is_registered|session_unregister)(?:[ \t]*)\(([\\\"\']*)'.$Key.'([\\\"\'\, \t)]*)/i', '\1(\2'.$Value.'\3', $contents ); // cookie or session variables
+					//$contents = preg_replace('/(setcookie|session_register|session_is_registered|session_unregister)(?:[ \t]*)\(([\\\"\']*)'.$Key.'([\\\"\'\, \t)]*)/i', '\1(\2'.$Value.'\3', $contents ); // cookie or session variables
+					$contents = preg_replace('/(setcookie|session_register|session_is_registered|session_unregister)(?:[ \t]*)\(([\\\"\']*)'.$Key.'([\\\"\'\, \t)]*)/', '\1(\2'.$Value.'\3', $contents ); // cookie or session variables
 				}
 				//if ($Key == 'subkat') echo "<pre>key_var:$Key At ".__LINE__."\n".htmlspecialchars($contents)."</pre>"; // debug
 
@@ -1067,13 +1081,17 @@ function ReplaceThem($FileName)
 				if ( !in_array($Key, $StdExcJSVarArray) )
 				{
 
-					$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);	// javascript variables
-					$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/is','\1'.$Value.'\3', $replaced);	// javascript variables
+					//$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);	// javascript variables
+					$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/s','\1'.$Value.'\3', $orig);	// javascript variables
+					//$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/is','\1'.$Value.'\3', $replaced);	// javascript variables
+					$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/s','\1'.$Value.'\3', $replaced);	// javascript variables
 
 					// $replaced = preg_replace('/(.*var[ \t\,a-zA-Z0-9_]+)('.$Key.')([ \t]*[\=\;\,])/Uis','\1'.$Value.'\3', $replaced);	// javascript var defines (var XXX;)
 					$replaced = preg_replace('/(.*var(?:[ \t]+|[ \t\,\=a-zA-Z0-9_]+[^a-zA-Z0-9_]))('.$Key.')([ \t]*[\=\;\,])/Uis','\1'.$Value.'\3', $replaced);	// javascript var defines (var XXX;)
-					$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/is','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
-					$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/is','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
+					//$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/is','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
+					$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/s','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
+					//$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/is','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
+					$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/s','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
 
 					$replaced = preg_replace('/((?:\(|\([^\)]*[ \t\,\+\-\.\*\/\!\<\>\=]))('.$Key.')((?:\)|[ \t\,\+\-\*\/\!\=\<\>][^\)]*\)))/Uis','\1'.$Value.'\3', $replaced);  // javascript function parameters
 
@@ -1110,13 +1128,17 @@ function ReplaceThem($FileName)
 
 					if ( !in_array($Key, $StdExcJSVarArray) )
 					{
-						$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);  // javascript variables
-						$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/is','\1'.$Value.'\3', $replaced);  // javascript variables
+						//$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/is','\1'.$Value.'\3', $orig);  // javascript variables
+						$replaced = preg_replace('/(.*?[ \.])('.$Key.')([ \t\.\=\!].*)/s','\1'.$Value.'\3', $orig);  // javascript variables
+						//$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/is','\1'.$Value.'\3', $replaced);  // javascript variables
+						$replaced = preg_replace('/(\=[ \t]*)('.$Key.')([ \t]*[\;\.])/s','\1'.$Value.'\3', $replaced);  // javascript variables
 
 						// $replaced = preg_replace('/(.*var[ \t\,a-zA-Z0-9_]+)('.$Key.')([ \t]*[\=\;\,])/Uis','\1'.$Value.'\3', $replaced);  // javascript var defines (var XXX;)
 						$replaced = preg_replace('/(.*var(?:[ \t]+|[ \t\,\=a-zA-Z0-9_]+[^a-zA-Z0-9_]))('.$Key.')([ \t]*[\=\;\,])/Uis','\1'.$Value.'\3', $replaced);  // javascript var defines (var XXX;)
-						$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/is','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
-						$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/is','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
+						//$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/is','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
+						$replaced = preg_replace('/([^0-9a-zA-Z_])('.$Key.')([ \t]*[\+\-\*\/\[\;\,\.\\=)])/s','\1'.$Value.'\3', $replaced);  // javascript arrays (xxx[])	// \= MISSING
+						//$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/is','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
+						$replaced = preg_replace('/((?:\[|\[[ \t\'\"\+\-\*\/a-zA-Z0-9_]*[^a-zA-Z0-9_]))('.$Key.')((?:\]|[^a-zA-Z0-9_][ \t\'\"\+\-\*\/a-zA-Z0-9_]*\]))/s','\1'.$Value.'\3', $replaced);  // javascript arrays ([xxx])
 
 						$replaced = preg_replace('/((?:\(|\([^\)]*[ \t\,\+\-\.\*\/\!\<\>\=]))('.$Key.')((?:\)|[ \t\,\+\-\*\/\!\=\<\>][^\)]*\)))/Uis','\1'.$Value.'\3', $replaced);  // javascript function parameters
 					}
@@ -1157,16 +1179,20 @@ function ReplaceThem($FileName)
 					// process javascript code
 					if ( !in_array($Key, $StdExcJSFuncArray) )
 					{
-						$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+						//$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+						$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/","\\1".$Value."(", $contents); //werkt
 
 						if ($ReplaceObjects)
 						$contents = preg_replace('/('.$Key.')::/',$Value.'::', $contents); // objects
 
 						if ($ReplaceClasses)
-						$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+						//$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+						$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1class '.$Value.'\3', $contents); // class declaration
 
-						$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
-						$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+						//$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+						$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+						//$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+						$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/','\1new '.$Value.'\3', $contents); // extended or derived class declaration
 					}
 
 					// replace javascript code in onXXX event handlers
@@ -1194,16 +1220,20 @@ function ReplaceThem($FileName)
 
 					if ( !in_array($Key, $StdExcJSFuncArray) )
 					{
-					$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+					//$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/i","\\1".$Value."(", $contents); //werkt
+					$contents = preg_replace("/([^a-zA-Z0-9_]+)".$Key."[ \t]*\\(/","\\1".$Value."(", $contents); //werkt
 
 					if ($ReplaceObjects)
 						$contents = preg_replace('/('.$Key.')::/',$Value.'::', $contents); // objects
 
 					if ($ReplaceClasses)
-						$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+						//$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1class '.$Value.'\3', $contents); // class declaration
+						$contents = preg_replace('/([^0-9a-zA-Z_])class[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1class '.$Value.'\3', $contents); // class declaration
 
-					$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
-					$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+					//$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/i','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+					$contents = preg_replace('/([^0-9a-zA-Z_])extends[ \t]*('.$Key.')([^0-9a-zA-Z_])/','\1extends '.$Value.'\3', $contents); // extended or derived class declaration
+					//$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/i','\1new '.$Value.'\3', $contents); // extended or derived class declaration
+					$contents = preg_replace('/([^0-9a-zA-Z_])new[ \t]+('.$Key.')([^0-9a-zA-Z_(])/','\1new '.$Value.'\3', $contents); // extended or derived class declaration
 
 					}
 				}
@@ -1318,7 +1348,11 @@ function DisplayArray($ArrayName, $HeaderText="", $BgColor="FFF0D0")
 		foreach( $ArrayName as $Key => $Value )
 		{
 			$Cnt++;
-			echo '<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b>'.$Key.'</b><br>'.$Value.'</TD>';
+			// nux: do not show numbers in tables (better for diffs)
+			if (is_int($Key))
+				echo '<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b></b><br>'.$Value.'</TD>';
+			else
+				echo '<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b>'.$Key.'</b><br>'.$Value.'</TD>';
 			if ( ( $Cnt % $TableColumns) == 0  && ( $Cnt != $sizeOf ) )
 			{
 				echo '</TR>';
@@ -1348,3 +1382,7 @@ function CheckSafeMode()
 
 </BODY>
 </HTML>
+<?php
+	$buffer = ob_get_flush();
+	file_put_contents(rtrim($TargetDir,'/').'/!_pobs.log.html', $buffer);
+?>
