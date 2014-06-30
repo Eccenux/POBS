@@ -8,7 +8,7 @@
 
 	August 10th 2003++
 
-	Version: 0.99nux3
+	Version: 0.99nux4
 	
 	0.99nux3
 		- removed case insensitive replace for most regexpes (PHP and JS are both mostly case sensitive)
@@ -99,7 +99,7 @@
 			exit;
 		}
 
-		echo	'<h3>Execute POBS : &quot;'.$SourceDir.'&quot; =&gt; &quot;'.$TargetDir.'&quot;</h3>';
+		echo	'<h3>Execute POBS : &quot;'.$SourceDir.'&quot; =&gt; &quot;'.$TargetDir.'&quot;</h3>'."\n";
 
 		GetWildCards();
 		ScanSourceFiles();
@@ -483,6 +483,7 @@ function ScanSourceFiles( $path = '' )
 			if($excludeDirectory == TRUE)
 			{
 				echo "<font color=blue>Directory $SourceDir.$fileName excluded, not copied!</font><br>";
+				echo "\n";
 			}
 			else
 			{
@@ -491,6 +492,7 @@ function ScanSourceFiles( $path = '' )
 				{
 					if ( @mkdir( $TargetDir.$fileName, 0707 ) ) echo 'Creating Directory : '.$TargetDir.$fileName.'.<br>';
 					else echo '- Creating Directory : '.$TargetDir.$fileName.' <FONT COLOR=orange>Warning: Creation failed.</b></FONT><br>';
+					echo "\n";
 				}
 
 				ScanSourceFiles( $fileName );
@@ -518,13 +520,14 @@ function ShowArrays() {
 	DisplayArray( $UdExcVarArray, "User Defined Exclude Variables", $BgColor="BFBFBF");
 	DisplayArray( $FileArray, "Scanned Files", $BgColor="FA8B68");
 
-	echo	'<br>&nbsp;<br><hr color="#000000" height=1 noshade><h3>Number of userdefined elements to be replaced :</h3>'.
-				'Functions: '.sizeof( $FuncArray ).'<br>'.
-				'Variables: '.sizeof( $VarArray ).'<br>'.
-				'JavaScript Variables: '.sizeof( $JSVarArray ).'<br>'.
-				'Constants: '.sizeof( $ConstArray ).'<br>'.
-				'<br>Scanned Files: '.sizeof( $FileArray ).'<br>'.
-				'&nbsp;<br>';
+	echo	'<br>&nbsp;<br><hr color="#000000" height=1 noshade>'.
+			"\n".'<h3>Number of userdefined elements to be replaced :</h3>'.
+				"\n".'Functions: '.sizeof( $FuncArray ).'<br>'.
+				"\n".'Variables: '.sizeof( $VarArray ).'<br>'.
+				"\n".'JavaScript Variables: '.sizeof( $JSVarArray ).'<br>'.
+				"\n".'Constants: '.sizeof( $ConstArray ).'<br>'.
+				"\n".'<br>Scanned Files: '.sizeof( $FileArray ).'<br>'.
+				"\n".'&nbsp;<br>';
 }
 
 
@@ -532,8 +535,10 @@ function WriteTargetFiles() {
 	global $FilesToReplaceArray, $FileArray, $StartTime, $TotalFileSizeRead, $TotalFileSizeWrite;
 	global $ReplaceNewer, $SourceDir, $TargetDir;
 
-	echo	'<h3>Check and Replacing file :</h3>'.
-				'<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR>';
+	echo	"\n".'<h3>Check and Replacing file :</h3>'.
+			"\n".'<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR>'.
+			"\n"
+	;
 
 	$count = 0;
 
@@ -554,7 +559,7 @@ function WriteTargetFiles() {
 			}
 		}
 
-		echo '<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR>';
+		echo "\n".'<TABLE BORDER=0 CELLSPACING=1 CELLPADDING=3><TR>';
 		//echo '<TR><TD>'.$count.' - '.$FileName.'</TD><TD>';
 		// nux: do not show numbers (better for diffs)
 		echo '<TR><TD> # '.$FileName.'</TD><TD>';
@@ -568,14 +573,16 @@ function WriteTargetFiles() {
 		flush();
 	}
 
-	echo '&nbsp;<br>'.
-		'&nbsp;<br><hr color="#000000" height=1 noshade><h3>Stats :</h3>'.
-		'Start Time: '.$StartTime.'<br>'.
-		'Finish Time: '.time().'<br>'.
-		'<b>Elapsed Time: '.(time()-$StartTime).' sec</b><br>'.
-		'&nbsp;<br>'.
-		'<b>Total FileSize of parsed Files: '.$TotalFileSizeRead.' Bytes<br>'.
-		'Total FileSize of written Files: '.$TotalFileSizeWrite.' Bytes</b><br>';
+	echo "\n".'&nbsp;<br>'.
+		"\n".'&nbsp;<br><hr color="#000000" height=1 noshade><h3>Stats :</h3>'.
+		"\n".'Start Time: '.date('Y-m-d H:i:s', $StartTime).'<br>'.
+		"\n".'Finish Time: '.date('Y-m-d H:i:s').'<br>'.
+		"\n".'<b>Elapsed Time: '.(time()-$StartTime).' sec</b><br>'.
+		"\n".'&nbsp;<br>'.
+		"\n".'<b>Total FileSize of parsed Files: '.$TotalFileSizeRead.' Bytes<br>'.
+		"\n".'Total FileSize of written Files: '.$TotalFileSizeWrite.' Bytes</b><br>'.
+		"\n"
+	;
 }
 
 // ** FUNCTIONS **
@@ -1334,8 +1341,9 @@ function DisplayArray($ArrayName, $HeaderText="", $BgColor="FFF0D0")
 
 	$sizeOf = sizeOf( $ArrayName );
 
-	echo	'<br>'."\n".
-				'<TABLE WIDTH="100%" BORDER=0 CELLSPACING=1 CELLPADDING=3 BGCOLOR="#000000"><TR><TD><FONT COLOR=#FFFFFF><b>'.$HeaderText.'</b></FONT></TD></TR></TABLE>';
+	echo	'<br>'."\n"
+				.'<TABLE WIDTH="100%" BORDER=0 CELLSPACING=1 CELLPADDING=3 BGCOLOR="#000000">'
+				.'<TR><TD><FONT COLOR=#FFFFFF><b>'.$HeaderText.'</b></FONT></TD></TR></TABLE>';
 	if ( $sizeOf )
 	{
 		if ( $sizeOf > $TableColumns ) $width = $TableColumns; else $width = $sizeOf;
@@ -1350,20 +1358,20 @@ function DisplayArray($ArrayName, $HeaderText="", $BgColor="FFF0D0")
 			$Cnt++;
 			// nux: do not show numbers in tables (better for diffs)
 			if (is_int($Key))
-				echo '<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b></b><br>'.$Value.'</TD>';
+				echo "\n".'<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b></b><br>'.$Value.'</TD>';
 			else
-				echo '<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b>'.$Key.'</b><br>'.$Value.'</TD>';
+				echo "\n".'<TD WIDTH="'.$width.'%" BGCOLOR="#'.$BgColor.'"><b>'.$Key.'</b><br>'.$Value.'</TD>';
 			if ( ( $Cnt % $TableColumns) == 0  && ( $Cnt != $sizeOf ) )
 			{
-				echo '</TR>';
+				echo "\n".'</TR>';
 				echo '<TR>';
 				$Line ++;
 			}
 		}
 		$i = $Cnt % $TableColumns;
-		if ( $i && $Line ) for ( ; $i < $TableColumns; $i++ ) echo '<TD BGCOLOR=#'.$BgColor.'>&nbsp;</TD>';
+		if ( $i && $Line ) for ( ; $i < $TableColumns; $i++ ) echo "\n".'<TD BGCOLOR=#'.$BgColor.'>&nbsp;</TD>';
 
-		echo '</TR></TABLE>'."\n";
+		echo "\n".'</TR></TABLE>'."\n";
 		flush();
 	}
 		else echo '<i>No match or no replace requested</i><br>';
@@ -1383,6 +1391,38 @@ function CheckSafeMode()
 </BODY>
 </HTML>
 <?php
+	//
+	// LOG
+	//
 	$buffer = ob_get_flush();
-	file_put_contents(rtrim($TargetDir,'/').'/!_pobs.log.html', $buffer);
+	$log_file_path = rtrim($TargetDir,'/').'/!_pobs.log.html';
+	
+	// write html version
+	file_put_contents($log_file_path, $buffer);
+	
+	// cleanup for txt version
+	$buffer	= preg_replace(
+		array(
+			//'##',
+			'#<(head|script|style)([^a-z:<>].*?)?>[\s\S]*?</\1>#i',
+			'#</?(br|td|tr|table|h[1-9]|p|div)([^a-z:<>].*?)?>#i',
+			'#</?(html|body|hr|font|b|i)([^a-z:<>].*?)?>#i',
+			'#\n{2,}#',
+			'#&nbsp;#',
+			'/(&(?:gt|lt|amp|quot|#[0-9]);)/e',
+		)
+		,
+		array(
+			//'',
+			"",		// remove contents of tags (and tags) like <head> and <script>
+			"\n",	// new line after <br>, <p> and such
+			"",		// remove some tags like <html> and <font>
+			"\n",	// remove extra lines after replacements
+			" ",	// nbsp -> space
+			"html_entity_decode('\\1')",	// entities translation
+		)
+		, $buffer);
+	
+	// write txt version
+	file_put_contents($log_file_path.".txt", $buffer);
 ?>

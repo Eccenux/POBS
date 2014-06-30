@@ -180,7 +180,21 @@
     );
 
     // variables in this array will be not replaced
-    $UdExcVarArray = array('Dummy Entry');
+    $UdExcVarArray = array('Dummy Entry'
+		// cache variables
+		/*
+		,'cv_0'
+		,'cv_1'
+		,'cv_2'
+		,'cv_3'
+		,'cv_4'
+		,'cv_5'
+		,'cv_6'
+		,'cv_7'
+		,'cv_8'
+		,'cv_9'
+		*/
+	);
 
     // constants in this array will be not replaced
     $UdExcConstArray = array('Dummy Entry');
