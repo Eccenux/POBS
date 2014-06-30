@@ -1,7 +1,11 @@
 POBS
 ====
 
-POBS is a PHP Obfuscator. This means it "compiles" your PHP files by making them unreadable to a human.   
+POBS is a PHP Obfuscator. This means it "compiles" your PHP files by making them unreadable to a human.
+
+How unreadable the output is? You can see for yourself in the `example`.
+
+**Note!** This is not meant to be bullet proof. The output code will not be re-usable for most people, but dedicated user will always be able to guess what you are doing in most single functions. In other words – re-using output code is hard, but not impossible.
 
 Installation
 -------------------
@@ -107,3 +111,8 @@ $SourceTargetDirsBase = "./io/";	// use "./" for base in pobs dir
 $CopyrightYearPattern= "#(Copyright [0-9]+\-)([0-9]+)#";
 $CopyrightYearReplacement= "\${1}%NewYear%";	// @note must containt "%NewYear%" for the replacement to work
 ```
+
+### 0.99.7 ###
+
+* `protected`, `abstract`... and other PHP 5 classes and methods obfuscation.
+* default timezone

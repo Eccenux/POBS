@@ -447,11 +447,11 @@ function ScanSourceFiles( $path = '' )
 					{
 						$Line = trim(strtolower($LineArray[$rgl]));
 
-						if ( ($ReplaceFunctions || $ReplaceJS) && substr($Line, 0, 9)=="function " ) // Search for Function declaration
+						if ( ($ReplaceFunctions || $ReplaceJS) && preg_match("#^[ \t]*([a-z]+ )?function#", $Line) ) // Search for Function declaration
 						{
 							$posEinde = strpos($Line, "(");
 							$FunctieNaam = substr(trim($LineArray[$rgl]), 0, $posEinde);
-							$FunctieNaam = trim(preg_replace("/function /i", "", $FunctieNaam));
+							$FunctieNaam = trim(preg_replace("/.*function /i", "", $FunctieNaam));
 							$FunctieNaam = trim(preg_replace("/\&/i", "", $FunctieNaam));
 
 							if($FunctieNaam == 'doLoad')
@@ -472,7 +472,7 @@ function ScanSourceFiles( $path = '' )
 								if ( empty($FuncArray[$FunctieNaam]) and !(in_array($FunctieNaam,$UdExcFuncArray))) $FuncArray[$FunctieNaam]="F".substr(md5($FunctieNaam), 0,8);
 							}
 						}
-						else if ( $ReplaceFunctions && preg_match("/^[ \t]*class[ \t]+([0-9a-zA-Z_]+)[ \t\n\r\{]/U", $LineArray[$rgl], $matches )) // Search for Class declaration
+						else if ( $ReplaceFunctions && preg_match("/^[ \t]*(?:[a-z]+ )?class[ \t]+([0-9a-zA-Z_]+)[ \t\n\r\{]/U", $LineArray[$rgl], $matches )) // Search for Class declaration
 						{
 							// store class name to the functions array - class name has to be same as constructor name
 							$FunctieNaam = $matches[1];

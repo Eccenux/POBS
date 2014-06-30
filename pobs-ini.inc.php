@@ -8,6 +8,7 @@
     file. It is assumed you are familiar with PHP code syntax if you 
     use POBS, so configuring this file won't give you too much trouble
     */
+	date_default_timezone_set('Europe/Paris');
 	
 	// for testing
 	// just run dummy parsing and do not write to any files or create directories
@@ -232,6 +233,7 @@
 
     // functions in this array will be not replaced
     $UdExcFuncArray = array('Dummy Entry',
+		'__construct',
 		'debug',
 		'myErrorHandler_std',
 		'myErrorHandler_sql',
