@@ -23,8 +23,8 @@ You can of course ignore this and only add exceptions when it is necessary.
 But to avoid this problem prematurely you should use prefixes in new projects for your PHP variables, functions and such. You can for example use below conventions.
 
 ### Variables ###
-* standard variables: "pv_" ("$pv_wartosc", nie "$wartosc") 
-* GET/POST: "rv_" ("rv_kid", nie "kid")
+* standard variables: "pv_" ("$pv_someValue", instead of "$someValue") 
+* GET/POST: "rv_" ("rv_kid", instead of "kid")
 
 ### Functions and classes ###
 * functions and methods: "pf_" (`pf_someFunction`, instead of `someFunction`)
