@@ -7,6 +7,14 @@ How unreadable the output is? You can see for yourself in the `example`.
 
 **Note!** This is not meant to be bullet proof. The output code will not be re-usable for most people, but dedicated user will always be able to guess what you are doing in most single functions. In other words – re-using output code is hard, but not impossible.
 
+Disclaimer
+-------------------
+Nobody was hurt during creation of this tool, but if you are accustomed to high quality, modern code, then you better not be looking inside ;-). AFAIK the tool started in 2001 - the time when PHP 4 was only starting to gain attention. If you don't remember those times - there were no real classes in PHP back then. Nobody used unit tests back then (PHPUnit 2004, Xdebug 2002). So you get the picture. Active development of the original author ended in 2003.
+
+Having said all that the tool works. The configuration is easy. I've added some comments, fixed some stuff that was not working for me and that's it. I'm using this tool for one, but relatively large project (100+ PHP files, about 10000 lines of code - not counting comments). 
+
+There are commercial tools out there that might be better suited for you needs. Just be warned that you should test the tools before you buy them! Some commercial tools, especially binary ones (sold as PHP extensions), may be unstable and you will only double your problems.
+
 Installation
 -------------------
 
