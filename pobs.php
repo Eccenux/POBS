@@ -14,7 +14,7 @@
 			- Florian PERRICHOT.
 			- Steve BEURET
 			- Philip ROBINSON
-			- Gr�gory GRAUMERre
+			- Grégory GRAUMERre
 			- Mark (mark@mylinks.sk)
 			- Maciej "Nux" Jaros
 
@@ -776,29 +776,29 @@ class CommentHandler
 		if(in_array('//', $StdReplaceComments))
 		{
 			// REMOVE COMMENTS //, EXCEPT '//-->'
-			$contents = preg_replace( "/[ \t\n]+(\/\/)(?![ \t]*-->)[^\n]*/me",
+			$contents = preg_replace_callback( "/[ \t\n]+(\/\/)(?![ \t]*-->)[^\n]*/m",
 //			$contents = preg_replace( "/(\/\/)(?![ \t]*-->)[^\n]*/me",
-				"\$this->StoreComment('\\0')", $contents);
+				"self::StoreComment", $contents);
 		}
 		if(in_array('#', $StdReplaceComments))
 		{
 			// REMOVE COMMENTS #
-			$contents = preg_replace( "/[ \t\n]+(\#)[^\n]*/sme",
-							"\$this->StoreComment('\\0')", $contents);
+			$contents = preg_replace_callback( "/[ \t\n]+(\#)[^\n]*/sm",
+							"self::StoreComment", $contents);
 		}
 		// REMOVE COMMENTS /* ... */
 		if(in_array('/**/', $StdReplaceComments))
 		{
-			$contents = preg_replace( '/\/\*.*?\*\/[ \n]*/sme',
-							"\$this->StoreComment('\\0')", $contents);
+			$contents = preg_replace_callback( '/\/\*.*?\*\/[ \n]*/sm',
+							"self::StoreComment", $contents);
 		}
 		//
 		// by nux
 		// REMOVE COMMENTS <!-- ... --> (currently one line only)
 		if(in_array('HTML', $StdReplaceComments))
 		{
-			$contents = preg_replace( '/<!--.*-->/se',
-							"\$this->StoreComment('\\0')", $contents);
+			$contents = preg_replace_callback( '/<!--.*-->/s',
+							"self::StoreComment", $contents);
 		}
 		// by nux: end
 		//
@@ -807,8 +807,8 @@ class CommentHandler
 	//restore the first n comments
 	function RestoreComments(&$contents)
 	{
-		$contents = preg_replace( '/___POBS_COMMENT_(\d+)/e',
-			"\$this->FetchComment('\\1')", $contents);
+		$contents = preg_replace_callback( '/___POBS_COMMENT_(\d+)/',
+			"self::FetchComment", $contents);
 
 	}
 
@@ -820,6 +820,7 @@ class CommentHandler
 
 	function StoreComment($comment)
 	{
+		if(is_array($comment)) $comment = $comment[0];
 		//store the comment and return a placeholder
 		//this allows us to preserve the format of
 		//comments when POBS removes white space
@@ -968,7 +969,7 @@ function ReplaceThem($FileName)
 		// by nux
 		$contents = preg_replace( "/[ \t]+\n/m", "\n", $contents);  // REMOVE TABS and SPACES at the end of lines
 		$contents = preg_replace( "/\n[ \t]+/m", "\n", $contents);  // REMOVE INDENT TABS and SPACES
-		// ryzykowane - można wpraść w komentarz
+		// ryzykowane - moÅ¼na wpraÅ›Ä‡ w komentarz
 		//$contents = preg_replace( "/[ \t\n]+([{}])[ \t\n]+/m", " $1 ", $contents);  // REMOVE lines around block of code
 		$contents = preg_replace( "/([{}])[ \t\n]+/m", "$1 ", $contents);  // REMOVE lines after or before block of code
 		// by nux
@@ -1471,7 +1472,6 @@ function CheckSafeMode()
 				'#</?(html|body|hr|font|b|i)([^a-z:<>].*?)?>#i',
 				'#\n{2,}#',
 				'#&nbsp;#',
-				'/(&(?:gt|lt|amp|quot|#[0-9]);)/e',
 				'/ - Elapsed Time: [0-9]+ sec./',
 			)
 			,
@@ -1482,10 +1482,18 @@ function CheckSafeMode()
 				"",		// remove some tags like <html> and <font>
 				"\n",	// remove extra lines after replacements
 				" ",	// nbsp -> space
-				"html_entity_decode('\\1')",	// entities translation
 				"",		// remove elapsed time for individual files
 			)
 			, $buffer);
+			
+		$callable_tmp = function($arr) {
+			return html_entity_decode($arr[0]);
+		};
+		$buffer = preg_replace_callback(
+				'/(&(?:gt|lt|amp|quot|#[0-9]);)/',
+				$callable_tmp, // entities translation
+				$buffer);
+				
 		
 		// write txt version
 		file_put_contents($log_file_path.".txt", $buffer);
